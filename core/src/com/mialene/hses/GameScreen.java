@@ -1,15 +1,21 @@
 package com.mialene.hses;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mialene.hses.objects.Food;
 import com.mialene.hses.objects.Golf;
+import com.mialene.hses.objects.Salad;
+import com.mialene.hses.objects.SaladBar;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
+
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class GameScreen implements Screen, InputProcessor {
     //game variable
@@ -21,12 +27,15 @@ public class GameScreen implements Screen, InputProcessor {
     private Viewport viewport;
 
     //All Texture;
-    private Texture bgTexture, saladBoxTexture;
+    private Texture bgTexture,barTexture, saladBoxTexture;
 
 
     //game objects
     Golf golf;
-    Food saladBox;
+    SaladBar saladBar;
+    private LinkedList<Salad> saladList;
+
+    private float elapsedSeconds = 0;
     GameScreen(HSES game){
         this.game = game;
         viewport = new FitViewport(2436,1125);
@@ -37,7 +46,8 @@ public class GameScreen implements Screen, InputProcessor {
 
         //
         createGameArea();
-        initializeFood();
+        prepareSalad();
+
         getGolfReady();
     }
 
@@ -48,23 +58,58 @@ public class GameScreen implements Screen, InputProcessor {
         golf = new Golf(game);
     }
 
-    //(tmp) draw still image of a test food
-    private void initializeFood(){
+    //prepare the salads
+    private void prepareSalad(){
+        barTexture = game.assets.manager.get(Assets.BLACK_TEXTURE);
         saladBoxTexture = game.assets.manager.get(Assets.SALAD_BOX_TEXTURE);
+        saladList = new LinkedList<>();
 
-        //initialize food
-        saladBox = new Food(saladBoxTexture,2000,1000,saladBoxTexture.getWidth(),saladBoxTexture.getHeight());
+        saladBar = new SaladBar(2200f,555f,5f,1125f,
+                saladBoxTexture.getWidth() * 0.5f,saladBoxTexture.getHeight() * 0.5f,500
+        ,saladBoxTexture,1f);
+
     }
 
+
     @Override
-    public void render(float delta) {
+    public void render(float deltaTime) {
         ScreenUtils.clear(0,0,0,1);
+
+
         batch.begin();
+        saladBar.update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
         golf.renderGolf(batch);
-        saladBox.drawFood(batch);
+
+        //drawSaladBar
+        saladBar.drawSaladBar(batch,barTexture);
+        //Salads
+        //create new salads
+        if(saladBar.canYouServe()){
+            Salad[] salads = saladBar.serveSalad(); //this is a method that return an array, and assign it to an array??
+            for(Salad salad : salads){
+                saladList.add(salad);
+            }
+        }
+        //draw and remove old salads
+        ListIterator<Salad> iterator = saladList.listIterator();
+        while (iterator.hasNext()){
+            Salad salad = iterator.next();
+            salad.drawSalad(batch);
+            salad.positionX -= salad.moveSpeed * deltaTime;
+            if(salad.positionX + salad.width < 0){
+                iterator.remove();
+            }
+        }
 
         batch.end();
+
+        elapsedSeconds += deltaTime;
+
+        if (elapsedSeconds >= 1) {
+            System.out.println(saladList.size());
+            elapsedSeconds = 0; // Reset the elapsed time
+        }
     }
 
     @Override
