@@ -33,7 +33,7 @@ public class GameScreen implements Screen, InputProcessor {
     //game objects
     Golf golf;
     SaladBar saladBar;
-    private LinkedList<Salad> saladList;
+    //private LinkedList<Salad> saladList;
 
     private float elapsedSeconds = 0;
     GameScreen(HSES game){
@@ -62,11 +62,11 @@ public class GameScreen implements Screen, InputProcessor {
     private void prepareSalad(){
         barTexture = game.assets.manager.get(Assets.BLACK_TEXTURE);
         saladBoxTexture = game.assets.manager.get(Assets.SALAD_BOX_TEXTURE);
-        saladList = new LinkedList<>();
+        //saladList = new LinkedList<>();
 
-        saladBar = new SaladBar(2200f,555f,5f,1125f,
-                saladBoxTexture.getWidth() * 0.5f,saladBoxTexture.getHeight() * 0.5f,500
-        ,saladBoxTexture,1f);
+        saladBar = new SaladBar(2436f,555f,5f,1125f,
+                saladBoxTexture.getWidth() * 0.5f,saladBoxTexture.getHeight() * 0.5f,200f
+        ,saladBoxTexture,5f);
 
     }
 
@@ -83,31 +83,14 @@ public class GameScreen implements Screen, InputProcessor {
 
         //drawSaladBar
         saladBar.drawSaladBar(batch,barTexture);
-        //Salads
-        //create new salads
-        if(saladBar.canYouServe()){
-            Salad[] salads = saladBar.serveSalad(); //this is a method that return an array, and assign it to an array??
-            for(Salad salad : salads){
-                saladList.add(salad);
-            }
-        }
-        //draw and remove old salads
-        ListIterator<Salad> iterator = saladList.listIterator();
-        while (iterator.hasNext()){
-            Salad salad = iterator.next();
-            salad.drawSalad(batch);
-            salad.positionX -= salad.moveSpeed * deltaTime;
-            if(salad.positionX + salad.width < 0){
-                iterator.remove();
-            }
-        }
+        saladBar.renderSalad(batch,deltaTime);
 
         batch.end();
 
         elapsedSeconds += deltaTime;
 
         if (elapsedSeconds >= 1) {
-            System.out.println(saladList.size());
+            System.out.println(saladBar.saladList.size());
             elapsedSeconds = 0; // Reset the elapsed time
         }
     }
