@@ -10,9 +10,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mialene.hses.objects.Golf;
+import com.mialene.hses.objects.Salad;
 import com.mialene.hses.objects.SaladBar;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
+
+import java.util.ListIterator;
 
 public class GameScreen implements Screen, InputProcessor {
     //game variable
@@ -69,15 +72,17 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void render(float deltaTime) {
         ScreenUtils.clear(0,0,0,1);
-
-
         batch.begin();
+
         saladBar.update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
-        golf.renderGolf(batch);
+        golf.renderGolf(batch, deltaTime);
 
         //drawSaladBar
         saladBar.renderSalad(batch,deltaTime);
+        //detect collisiion
+        detectCollision(deltaTime);
+
 
         batch.end();
 
@@ -87,6 +92,19 @@ public class GameScreen implements Screen, InputProcessor {
             System.out.println(saladBar.saladList.size());
             elapsedSeconds = 0; // Reset the elapsed time
         }
+    }
+
+    private void detectCollision(float delTatime){
+        //check if the rectangle is intersects
+        ListIterator<Salad> iterator = SaladBar.saladList.listIterator();
+        while (iterator.hasNext()){
+            Salad salad = iterator.next();
+            if(golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
+                System.out.println("Hit");
+                iterator.remove();
+                golf.makeGolfEatBox();
+            }
+            }
     }
 
     @Override

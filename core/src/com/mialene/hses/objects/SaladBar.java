@@ -21,7 +21,7 @@ public class SaladBar {
     public Texture saladTexture;
     public float timeBetweenServe;
     public float timeSinceLastServe = 0;
-    public LinkedList<Salad> saladList;
+    public static LinkedList<Salad> saladList;
 
     public SaladBar(float barPositionX, float barPositionY, float barWidth, float barHeight,
                     float saladWidth, float saladHeight,float saladMoveSpeed, Texture saladTexture,
@@ -45,14 +45,14 @@ public class SaladBar {
     }
 
     public boolean canYouServe(){
-        return timeSinceLastServe - timeBetweenServe >= 0 && saladList.size() <= 4;
+        return timeSinceLastServe - timeBetweenServe >= 0 && saladList.size() <= 5;
     }
 
     public Salad[] serveSalad(){
-        Salad[] salads = new Salad[(random.nextInt(3))];
+        Salad[] salads = new Salad[(random.nextInt(5))];
         for(int index = 0; index < salads.length; index++){
-            salads[index] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
-                    saladWidth,saladHeight);
+            salads[index] = new Salad(barPositionX,barPositionY + barHeight * ((random.nextFloat() * 0.96f) - 0.48f),
+                    saladMoveSpeed,saladTexture,saladWidth,saladHeight);
         }
 
 
@@ -90,7 +90,7 @@ public class SaladBar {
             salad.positionY += salad.verticalMoveSpeed * deltaTime;
 
             //make it bounce
-            if(salad.positionY + saladHeight * 0.3 >= GlobalVariables.WORLD_HEIGHT || salad.positionY - saladHeight * 0.3 <= 0){
+            if(salad.positionY + saladHeight * 0.7 >= GlobalVariables.WORLD_HEIGHT || salad.positionY + saladHeight * 0.3 <= 0){
                 salad.verticalMoveSpeed *= -1;
             }
 

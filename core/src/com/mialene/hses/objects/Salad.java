@@ -2,19 +2,20 @@ package com.mialene.hses.objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
 
 public class Salad {
-    public float positionX, positionY;
+    public float positionX, positionY; //store the lower left position
     public float width, height;
     public float moveSpeed;
     public float verticalMoveSpeed;
     private Texture texture;
 
-    public Salad(float positionX, float positionY, float moveSpeed, Texture texture,float width, float height) {
-        this.positionX = positionX;
-        this.positionY = positionY;
+    public Salad(float xCentre, float yCentre, float moveSpeed, Texture texture,float width, float height) {
+        this.positionX = xCentre - width / 2;
+        this.positionY = yCentre - height / 2;
         this.moveSpeed = moveSpeed;
         this.texture = texture;
         this.width = width;
@@ -26,6 +27,12 @@ public class Salad {
     }
 
     public void drawSalad(Batch batch){
-        batch.draw(texture,positionX - width / 2,positionY - height / 2,width,height);
+        batch.draw(texture,positionX,positionY,width,height);
     }
+
+    public Rectangle getBoundingBox(){
+        return new Rectangle(positionX,positionY,width,height);
+    }
+
+
 }
