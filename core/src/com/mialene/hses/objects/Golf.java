@@ -25,8 +25,9 @@ public class Golf {
     private float stateTime;
     //variables related to position
     private float startX = 1000, startY = 500;
-    private Vector2 golfPosition = new Vector2();
+    public Vector2 golfPosition = new Vector2();
     private int facing;
+    private  float golfWidth = 486 * 0.5f, golfHeight = 450 * 0.5f;
     //for movement
     private final float MOVE_SPEED = 10;
     private Vector2 movementDirection = new Vector2();
@@ -52,6 +53,18 @@ public class Golf {
     private void update(){
         golfPosition.x += movementDirection.x;
         golfPosition.y += movementDirection.y;
+
+        if(golfPosition.y >= GlobalVariables.WORLD_HEIGHT){
+            golfPosition.y = GlobalVariables.WORLD_HEIGHT;
+        } else if (golfPosition.y - golfHeight <= 0) {
+            golfPosition.y = golfHeight;
+        }
+
+        if(golfPosition.x - golfWidth <= 0){
+            golfPosition.x = golfWidth;
+        } else if (golfPosition.x >= GlobalVariables.WORLD_WIDTH) {
+            golfPosition.x = GlobalVariables.WORLD_WIDTH;
+        }
     }
 
     public void moveLeft(){
@@ -130,8 +143,7 @@ public class Golf {
                 break;
         }
         //below is from chatGPT
-        float golfWidth = 486 * 0.5f;
-        float golfHeight = 450 * 0.5f;
+
 
         int frameX = currentFrame.getRegionX();
         int frameY = currentFrame.getRegionY();

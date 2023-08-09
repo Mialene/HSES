@@ -10,7 +10,6 @@ public class Assets {
     public static final String IDLE_SPRITESHEET = "sprite/Idle.png";
 
     //enemies
-    public static final String BLACK_TEXTURE = "textures/Black.png";
     public static final String SALAD_BOX_TEXTURE = "sprite/SaladBox.png";
 
     public void load(){
@@ -22,7 +21,6 @@ public class Assets {
         manager.load(BACKGROUND_TEXTURE, Texture.class);
         manager.load(IDLE_SPRITESHEET, Texture.class);
         manager.load(SALAD_BOX_TEXTURE, Texture.class);
-        manager.load(BLACK_TEXTURE, Texture.class);
     }
 
     public void dispose(){

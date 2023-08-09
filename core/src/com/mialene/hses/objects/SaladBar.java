@@ -6,11 +6,14 @@ import com.mialene.hses.resources.GlobalVariables;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Random;
 
 public class SaladBar {
     //bar Characteristics
     private float barPositionX, barPositionY;
     private float barWidth, barHeight;
+    //bar random
+    private Random random = new Random();
 
     //salad Characteristics
     protected float saladWidth, saladHeight;
@@ -37,27 +40,32 @@ public class SaladBar {
         saladList = new LinkedList<>();
     }
 
-    public void drawSaladBar(Batch batch, Texture texture){
-        batch.draw(texture,barPositionX - barWidth / 2,barPositionY - barHeight / 2,barWidth,barHeight);
-    }
-
     public void update(float deltaTime){
         timeSinceLastServe += deltaTime;
     }
 
     public boolean canYouServe(){
-        return timeSinceLastServe - timeBetweenServe >= 0;
+        return timeSinceLastServe - timeBetweenServe >= 0 && saladList.size() <= 4;
     }
 
     public Salad[] serveSalad(){
-        Salad[] salads = new Salad[3];
-        salads[0] = new Salad(barPositionX,barPositionY + barHeight * 0.02f,saladMoveSpeed,saladTexture,
+        Salad[] salads = new Salad[(random.nextInt(3))];
+        for(int index = 0; index < salads.length; index++){
+            salads[index] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
+                    saladWidth,saladHeight);
+        }
+
+
+        /*
+        salads[0] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
                 saladWidth,saladHeight);
 
-        salads[1] = new Salad(barPositionX,barPositionY - barHeight * 0.25f,saladMoveSpeed,saladTexture,
+        salads[1] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
                 saladWidth,saladHeight);
-        salads[2] = new Salad(barPositionX,barPositionY - barHeight * 0.33f,saladMoveSpeed,saladTexture,
+        salads[2] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
                 saladWidth,saladHeight);
+
+         */
 
         timeSinceLastServe = 0;
 

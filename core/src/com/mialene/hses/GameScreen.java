@@ -1,21 +1,18 @@
 package com.mialene.hses;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mialene.hses.objects.Golf;
-import com.mialene.hses.objects.Salad;
 import com.mialene.hses.objects.SaladBar;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
-
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class GameScreen implements Screen, InputProcessor {
     //game variable
@@ -27,13 +24,12 @@ public class GameScreen implements Screen, InputProcessor {
     private Viewport viewport;
 
     //All Texture;
-    private Texture bgTexture,barTexture, saladBoxTexture;
+    private Texture bgTexture, saladBoxTexture;
 
 
     //game objects
     Golf golf;
     SaladBar saladBar;
-    //private LinkedList<Salad> saladList;
 
     private float elapsedSeconds = 0;
     GameScreen(HSES game){
@@ -60,7 +56,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     //prepare the salads
     private void prepareSalad(){
-        barTexture = game.assets.manager.get(Assets.BLACK_TEXTURE);
         saladBoxTexture = game.assets.manager.get(Assets.SALAD_BOX_TEXTURE);
         //saladList = new LinkedList<>();
 
@@ -82,7 +77,6 @@ public class GameScreen implements Screen, InputProcessor {
         golf.renderGolf(batch);
 
         //drawSaladBar
-        saladBar.drawSaladBar(batch,barTexture);
         saladBar.renderSalad(batch,deltaTime);
 
         batch.end();
