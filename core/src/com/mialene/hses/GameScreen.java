@@ -100,7 +100,6 @@ public class GameScreen implements Screen, InputProcessor {
         while (iterator.hasNext()){
             Salad salad = iterator.next();
             if(golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
-                System.out.println("Hit");
                 iterator.remove();
                 golf.makeGolfEatBox();
             }
@@ -141,17 +140,19 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         //movement
-        if(keycode == Input.Keys.A){
-            golf.moveLeft();
-        } else if (keycode == Input.Keys.D) {
-            golf.moveRight();
-        }
 
-        if(keycode == Input.Keys.W || keycode == Input.Keys.UP){
-            golf.moveUp();
-        } else if (keycode == Input.Keys.S) {
-            golf.moveDown();
-        }
+            if (keycode == Input.Keys.A) {
+                golf.moveLeft();
+            } else if (keycode == Input.Keys.D) {
+                golf.moveRight();
+            }
+
+            if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
+                golf.moveUp();
+            } else if (keycode == Input.Keys.S) {
+                golf.moveDown();
+            }
+
         return false;
     }
 

@@ -59,8 +59,7 @@ public class Golf {
     }
 
     private void update(float stateTime) {
-        golfPosition.x += movementDirection.x;
-        golfPosition.y += movementDirection.y;
+        golfPosition.add(movementDirection);
 
         if (golfPosition.y >= GlobalVariables.WORLD_HEIGHT) {
             golfPosition.y = GlobalVariables.WORLD_HEIGHT;
