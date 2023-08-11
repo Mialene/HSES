@@ -4,7 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -12,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mialene.hses.objects.Golf;
 import com.mialene.hses.objects.Salad;
 import com.mialene.hses.objects.SaladBar;
+import com.mialene.hses.objects.Sarah;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
 
@@ -20,11 +24,24 @@ import java.util.ListIterator;
 public class GameScreen implements Screen, InputProcessor {
     //game variable
     private final HSES game;
-
-
     //Graphics
     public SpriteBatch batch;
     private Viewport viewport;
+
+    //game
+    private Sarah.ProductivityState productivityState = Sarah.ProductivityState.STARTING;
+    //day
+    private int currentDay = 1;
+    private static final float MAX_REMAINING_TIME = 99.99f;
+    private float remainingTime = MAX_REMAINING_TIME;
+    //fonts
+    private BitmapFont smallFont, mediumFont,largeFont;
+    private static final Color DEFAULT_FONT_COLOR = Color.WHITE;
+    //HUD
+    private float HUDMargin = 20f;
+    private static final Color PRODUCTIVITY_BAR_COLOR = GlobalVariables.GOLD;
+    private static final Color PRODUCTIVITY_BACKGROUND_COLOR = GlobalVariables.BLUEISH;
+
 
     //All Texture;
     private Texture bgTexture, saladBoxTexture;
@@ -45,6 +62,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         //
         createGameArea();
+        setUpFonts();
         prepareSalad();
 
         getGolfReady();
@@ -65,7 +83,23 @@ public class GameScreen implements Screen, InputProcessor {
         saladBar = new SaladBar(2436f,555f,5f,1125f,
                 saladBoxTexture.getWidth() * 0.5f,saladBoxTexture.getHeight() * 0.5f,200f
         ,saladBoxTexture,5f);
+    }
 
+    private void setUpFonts(){
+        smallFont = game.assets.manager.get(Assets.SMALL_FONT);
+        //smallFont.getData().setScale(GlobalVariables.WORLD_SCALE);
+        smallFont.setColor(DEFAULT_FONT_COLOR);
+        smallFont.setUseIntegerPositions(false);
+
+        mediumFont = game.assets.manager.get(Assets.MEDIUM_FONT);
+        //mediumFont.getData().setScale(GlobalVariables.WORLD_SCALE);
+        mediumFont.setColor(DEFAULT_FONT_COLOR);
+        smallFont.setUseIntegerPositions(false);
+
+        largeFont = game.assets.manager.get(Assets.LARGE_FONT);
+        //largeFont.getData().setScale(GlobalVariables.WORLD_SCALE);
+        largeFont.setColor(DEFAULT_FONT_COLOR);
+        largeFont.setUseIntegerPositions(false);
     }
 
 
@@ -82,6 +116,9 @@ public class GameScreen implements Screen, InputProcessor {
         saladBar.renderSalad(batch,deltaTime);
         //detect collisiion
         detectCollision(deltaTime);
+
+        //draw the HUD
+        renderHUD();
 
 
         batch.end();
@@ -104,6 +141,31 @@ public class GameScreen implements Screen, InputProcessor {
                 golf.makeGolfEatBox();
             }
             }
+    }
+
+    private void renderHUD(){
+
+        //draw the current day
+        smallFont.draw(batch,"Day: " + "1",HUDMargin,viewport.getWorldHeight() - HUDMargin);
+
+        //draw the productivity state
+        String text;
+        switch (productivityState){
+            case STARTING:
+                text = "STARTING";
+                break;
+            case HALFWAY:
+                text = "HAlFWAY";
+                break;
+            case ALMOST:
+                text = "ALMOST DONE";
+                break;
+            case DONE:
+                text = "FINISHED";
+            default:
+                text = "EATING";
+        }
+        smallFont.draw(batch,"Productivity: " + text,HUDMargin,HUDMargin + smallFont.getCapHeight());
     }
 
     @Override
