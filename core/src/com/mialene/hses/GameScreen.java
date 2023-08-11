@@ -6,9 +6,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -26,6 +26,7 @@ public class GameScreen implements Screen, InputProcessor {
     private final HSES game;
     //Graphics
     public SpriteBatch batch;
+    public ShapeRenderer shapeRenderer;
     private Viewport viewport;
 
     //game
@@ -40,7 +41,15 @@ public class GameScreen implements Screen, InputProcessor {
     //HUD
     private float HUDMargin = 20f;
     private static final Color PRODUCTIVITY_BAR_COLOR = GlobalVariables.GOLD;
-    private static final Color PRODUCTIVITY_BACKGROUND_COLOR = GlobalVariables.BLUEISH;
+    private static final Color MAX_BACKGROUND_COLOR = GlobalVariables.BLUEISH;
+    //HUD productivity bar
+    private float productivityBarPadding; //for gold bar vs the percent text
+    private float productivityBarMaxHeight; //the main one when it progressed to the max
+    private float productivityBarWidth; //the gold bar width
+    private float maxBackgroundBarPadding; //the blueish bar vs the gold bar
+    private float maxBackgroundBarHeight; //the maximum blueish
+    private float maxBackgroundBarWidth; //the width of the blueish
+    private float maxBackgroundBarMarginBottom; //space from bottom text
 
 
     //All Texture;
@@ -49,6 +58,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     //game objects
     Golf golf;
+    Sarah sarah;
     SaladBar saladBar;
 
     private float elapsedSeconds = 0;
@@ -56,6 +66,7 @@ public class GameScreen implements Screen, InputProcessor {
         this.game = game;
         viewport = new FitViewport(2436,1125);
         batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
 
         game.assets.load();
         game.assets.manager.finishLoading();
@@ -73,6 +84,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
     private void getGolfReady(){
         golf = new Golf(game);
+        sarah = new Sarah();
     }
 
     //prepare the salads
@@ -109,6 +121,7 @@ public class GameScreen implements Screen, InputProcessor {
         batch.begin();
 
         saladBar.update(deltaTime);
+        sarah.update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
         golf.renderGolf(batch, deltaTime);
 
@@ -166,6 +179,36 @@ public class GameScreen implements Screen, InputProcessor {
                 text = "EATING";
         }
         smallFont.draw(batch,"Productivity: " + text,HUDMargin,HUDMargin + smallFont.getCapHeight());
+
+        //set up the productivity bar
+        productivityBarPadding = 10;
+        productivityBarMaxHeight = 400; //the max productivity
+        productivityBarWidth = 40;
+
+        maxBackgroundBarPadding = 10;
+        maxBackgroundBarHeight = productivityBarMaxHeight + maxBackgroundBarPadding * 2f;
+        maxBackgroundBarWidth = productivityBarWidth + maxBackgroundBarPadding * 2f;
+        maxBackgroundBarMarginBottom = 5;
+
+        float maxBackgroundBarPositionY;
+        maxBackgroundBarPositionY = smallFont.getCapHeight() + maxBackgroundBarMarginBottom;
+        float productivityBarPositionY;
+        productivityBarPositionY = maxBackgroundBarPositionY + maxBackgroundBarPadding;
+        float percentTextPositionY = maxBackgroundBarHeight * 0.75f;
+
+        batch.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        //draw the max background bar
+        shapeRenderer.setColor(MAX_BACKGROUND_COLOR);
+        shapeRenderer.rect(HUDMargin,maxBackgroundBarPositionY,maxBackgroundBarWidth,maxBackgroundBarHeight);
+
+        shapeRenderer.setColor(PRODUCTIVITY_BAR_COLOR);
+        shapeRenderer.rect(HUDMargin + productivityBarPadding,productivityBarPositionY,productivityBarWidth,
+                productivityBarMaxHeight * sarah.getProductivity() / sarah.getWorkload());
+
+        shapeRenderer.end();
+        batch.begin();
     }
 
     @Override
@@ -181,7 +224,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        shapeRenderer.dispose();
     }
 
     @Override
