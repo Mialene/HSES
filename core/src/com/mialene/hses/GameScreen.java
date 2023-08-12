@@ -26,13 +26,32 @@ public class GameScreen implements Screen, InputProcessor {
     public SpriteBatch batch;
     public ShapeRenderer shapeRenderer;
     private Viewport viewport;
-
-    //game
+    //Sarah's state
     private Sarah.ProductivityState productivityState = Sarah.ProductivityState.STARTING;
-    //day
-    private int currentDay = 1;
+
+    //game state and day state and timer
+    //I don't under each part yet but let's make my game replayable !!First step!!
+    private enum GameState{
+        RUNNING,
+        PAUSED,
+        GAME_OVER
+    }
+    private GameState gameState;
+    private enum DayState{
+        STARTING,
+        IN_PROGRESS,
+        ENDING
+    }
+    private DayState dayState;
+    private final float START_DAY_DELAY = 3f;
+    private final float END_DAY_DELAY = 3f;
+    private int currentDay;
+    private float dayStateTime;
+    private int life = 1;
+
+    //remaining time of the day
     private static final float MAX_REMAINING_TIME = 99.99f;
-    private float remainingTime = MAX_REMAINING_TIME;
+    private float dayTimer;
     //fonts
     private BitmapFont smallFont, mediumFont,largeFont;
     private static final Color DEFAULT_FONT_COLOR = Color.WHITE;
@@ -73,9 +92,7 @@ public class GameScreen implements Screen, InputProcessor {
         //
         createGameArea();
         setUpFonts();
-        prepareSalad();
-
-        getGolfReady();
+        sarah = new Sarah();
     }
 
     private void createGameArea(){
@@ -90,7 +107,6 @@ public class GameScreen implements Screen, InputProcessor {
     }
     private void getGolfReady(){
         golf = new Golf(game);
-        sarah = new Sarah();
     }
 
     //prepare the salads
@@ -126,8 +142,10 @@ public class GameScreen implements Screen, InputProcessor {
         ScreenUtils.clear(0,0,0,1);
         batch.begin();
 
+
         saladBar.update(deltaTime);
-        sarah.update(deltaTime);
+
+        update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
         golf.renderGolf(batch, deltaTime);
         desk.draw(batch);
@@ -151,6 +169,38 @@ public class GameScreen implements Screen, InputProcessor {
         }
     }
 
+    private void update(float deltaTime){
+        if(dayState == DayState.STARTING && dayStateTime >= START_DAY_DELAY){
+            //if the 3 seconds delay has passed, start the day
+            sarah.setProductivity(0);
+            dayState = DayState.IN_PROGRESS;
+            dayStateTime = 0f;
+            sarah.changeState(Sarah.SarahState.WORKING);
+        } else if (dayState == DayState.ENDING && dayStateTime >= END_DAY_DELAY) {
+            if(life <= 0){
+                gameState = GameState.GAME_OVER;
+            }else {
+                startDay();
+            }
+        }else{
+            dayStateTime += deltaTime;
+        }
+
+        if(sarah.productivity >= sarah.workload && sarah.sarahState == Sarah.SarahState.WORKING){
+            winDay();
+        } else if (dayTimer <= 0) {
+            loseDay();
+        }
+
+        //decrease the timer
+        if(dayState == DayState.IN_PROGRESS){
+            dayTimer -= deltaTime;
+            sarah.working(deltaTime);
+        }
+
+
+    }
+
     private void detectCollision(float delTatime){
         //check if the rectangle is intersects
         ListIterator<Salad> iterator = SaladBar.saladList.listIterator();
@@ -166,7 +216,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void renderHUD(){
 
         //draw the current day
-        smallFont.draw(batch,"Day: " + "1",HUDMargin,viewport.getWorldHeight() - HUDMargin);
+        smallFont.draw(batch,"Day: " + currentDay,HUDMargin,viewport.getWorldHeight() - HUDMargin);
 
         //draw the productivity state
         String text;
@@ -223,7 +273,7 @@ public class GameScreen implements Screen, InputProcessor {
                 productivityBarWidth, Align.center,false);
 
         //draw the day timer
-        mediumFont.draw(batch,Integer.toString((int) remainingTime),
+        mediumFont.draw(batch,Integer.toString((int) dayTimer),
                 GlobalVariables.WORLD_WIDTH / 2f,GlobalVariables.WORLD_HEIGHT - HUDMargin,
                 0,Align.center,false);
 
@@ -238,6 +288,47 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this);
+        startGame();
+    }
+
+    private void startGame(){
+        gameState = GameState.RUNNING;
+        currentDay = 1;
+        startDay();
+    }
+
+    private void startDay(){
+        /* Because we have to
+        1. Reset Golf and Sarah's state and position
+        2. the SaladBar needs to be reconstructed cause more days = more speed and frequency of salads
+        that's smart, Brandon.
+         */
+        prepareSalad();
+        getGolfReady();
+
+        dayState = DayState.STARTING;
+        dayStateTime = 0f;
+        dayTimer = MAX_REMAINING_TIME;
+    }
+
+    private void winDay(){
+        //call the method that will refer to Sarah's win animation later
+
+        currentDay++;
+        sarah.changeState(Sarah.SarahState.CELEBRATING);
+        endDay();
+    }
+
+    private void loseDay(){
+        //call the method that will refer to Sarah's lose animation later
+
+        life--;
+        endDay();
+    }
+
+    private void endDay(){
+        dayState = DayState.ENDING;
+        dayStateTime = 0;
     }
 
     @Override

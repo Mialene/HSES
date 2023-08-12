@@ -26,23 +26,20 @@ public class Sarah {
     public Sarah() {
 
         productivity = 0;
-        sarahState = SarahState.WORKING;
+        sarahState = SarahState.CELEBRATING;
     }
 
     public void update(float deltaTime){
-        isSarahWorking(deltaTime);
+
     }
 
-    private void isSarahWorking(float deltaTime){
-        switch(sarahState){
-            case EATING:
-                productivity = productivity;
-                break;
-            default:
-                if(productivity <= workload) {
-                    productivity += 15 * deltaTime;
-                }
+    public void working(float deltaTime){
+        if(sarahState == SarahState.WORKING){
+            productivity += 15 * deltaTime;
         }
+    }
+    public void setProductivity(float num){
+        this.productivity = num;
     }
 
     public float getProductivity(){
@@ -51,5 +48,9 @@ public class Sarah {
 
     public float getWorkload(){
         return workload;
+    }
+
+    public void changeState(SarahState state){
+        sarahState = state;
     }
 }
