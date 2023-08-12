@@ -9,13 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mialene.hses.objects.Golf;
-import com.mialene.hses.objects.Salad;
-import com.mialene.hses.objects.SaladBar;
-import com.mialene.hses.objects.Sarah;
+import com.mialene.hses.objects.*;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
 
@@ -53,10 +51,11 @@ public class GameScreen implements Screen, InputProcessor {
 
 
     //All Texture;
-    private Texture bgTexture, saladBoxTexture;
+    private Texture bgTexture, deskTexture, saladBoxTexture;
 
 
     //game objects
+    Furniture desk;
     Golf golf;
     Sarah sarah;
     SaladBar saladBar;
@@ -81,6 +80,13 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void createGameArea(){
         bgTexture = game.assets.manager.get(Assets.BACKGROUND_TEXTURE);
+        deskTexture = game.assets.manager.get(Assets.DESK_TEXTURE);
+
+        desk = new Furniture(deskTexture,
+                GlobalVariables.WORLD_WIDTH * 0.22f,
+                GlobalVariables.WORLD_HEIGHT * 0.5f,
+                deskTexture.getWidth(),
+                deskTexture.getHeight());
     }
     private void getGolfReady(){
         golf = new Golf(game);
@@ -124,6 +130,7 @@ public class GameScreen implements Screen, InputProcessor {
         sarah.update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
         golf.renderGolf(batch, deltaTime);
+        desk.draw(batch);
 
         //drawSaladBar
         saladBar.renderSalad(batch,deltaTime);
@@ -209,6 +216,17 @@ public class GameScreen implements Screen, InputProcessor {
 
         shapeRenderer.end();
         batch.begin();
+
+        //draw the percent
+        int percent = (int) (sarah.productivity / sarah.workload * 100);
+        smallFont.draw(batch,percent + "%",100, GlobalVariables.WORLD_HEIGHT / 2f + smallFont.getCapHeight() / 2f,
+                productivityBarWidth, Align.center,false);
+
+        //draw the day timer
+        mediumFont.draw(batch,Integer.toString((int) remainingTime),
+                GlobalVariables.WORLD_WIDTH / 2f,GlobalVariables.WORLD_HEIGHT - HUDMargin,
+                0,Align.center,false);
+
     }
 
     @Override
