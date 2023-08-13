@@ -27,7 +27,6 @@ public class GameScreen implements Screen, InputProcessor {
     public ShapeRenderer shapeRenderer;
     private Viewport viewport;
     //Sarah's state
-    private Sarah.ProductivityState productivityState = Sarah.ProductivityState.STARTING;
 
     //game state and day state and timer
     //I don't under each part yet but let's make my game replayable !!First step!!
@@ -228,20 +227,18 @@ public class GameScreen implements Screen, InputProcessor {
 
         //draw the productivity state
         String text;
-        switch (productivityState){
+        switch (sarah.productivityState){
             case STARTING:
                 text = "STARTING";
                 break;
             case HALFWAY:
-                text = "HAlFWAY";
+                text = "HALFWAY";
                 break;
             case ALMOST:
                 text = "ALMOST DONE";
                 break;
-            case DONE:
-                text = "FINISHED";
             default:
-                text = "EATING";
+                text = "FINISHED";
         }
         smallFont.draw(batch,"Productivity: " + text,HUDMargin,HUDMargin + smallFont.getCapHeight());
 
@@ -288,6 +285,17 @@ public class GameScreen implements Screen, InputProcessor {
         mediumFont.draw(batch,Integer.toString((int) dayTimer),
                 GlobalVariables.WORLD_WIDTH / 2f,GlobalVariables.WORLD_HEIGHT - HUDMargin,
                 0,Align.center,false);
+
+        //change productivity state
+        if (percent >= 50 && percent < 80) {
+            sarah.changeProductivityState(Sarah.ProductivityState.HALFWAY);
+        } else if (percent >= 80 && percent < 100) {
+            sarah.changeProductivityState(Sarah.ProductivityState.ALMOST);
+        } else if (percent == 100) {
+            sarah.changeProductivityState(Sarah.ProductivityState.DONE);
+        } else {
+            sarah.changeProductivityState(Sarah.ProductivityState.STARTING);
+        }
 
     }
 

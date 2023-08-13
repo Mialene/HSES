@@ -28,14 +28,15 @@ public class Sarah {
     }
 
     public SarahState sarahState;
+    public ProductivityState productivityState;
     public float workload = 1000;
     public float productivity;
     private float stateTime;
     Rectangle deathBox;
 
     //for animations
-    private Texture workingTexture;
-    private Animation<TextureRegion> workingAnimation;
+    private Texture workingTexture, eatingTexture;
+    private Animation<TextureRegion> workingAnimation, eatingAnimation;
     private TextureRegion[] allFrames;
     private TextureRegion currentFrame;
 
@@ -44,9 +45,11 @@ public class Sarah {
 
         productivity = 0;
         sarahState = SarahState.WORKING;
+        productivityState = ProductivityState.STARTING;
         deathBox = new Rectangle(0,0, GlobalVariables.WORLD_WIDTH * 0.25f,GlobalVariables.WORLD_HEIGHT);
 
         initializeWorkingAnimation();
+        initializeEatingAnimation();
 
         stateTime = 0;
     }
@@ -90,9 +93,15 @@ public class Sarah {
     }
 
     private void initializeWorkingAnimation(){
-        workingTexture = game.assets.manager.get(Assets.SARAH_WORKING_TEXTURE);
+        workingTexture = game.assets.manager.get(Assets.SARAH_WORKING_SPRITESHEET);
         allFrames = splitToArray(workingTexture);
         workingAnimation = new Animation<>(0.09f,allFrames);
+    }
+
+    private void initializeEatingAnimation(){
+        eatingTexture = game.assets.manager.get(Assets.SARAH_EATING_SPRITESHEET);
+        allFrames = splitToArray(eatingTexture);
+        eatingAnimation = new Animation<>(0.09f,allFrames);
     }
 
     private TextureRegion[] splitToArray(Texture texture){
@@ -112,17 +121,17 @@ public class Sarah {
         update(stateTime);
 
         switch (sarahState){
-            /*
             case WORKING:
                 currentFrame = workingAnimation.getKeyFrame(stateTime,true);
                 break;
-
-             */
-            default:
-                currentFrame = workingAnimation.getKeyFrame(stateTime,true);
+            case EATING:
+                currentFrame = eatingAnimation.getKeyFrame(stateTime,true);
         }
         batch.draw(currentFrame,GlobalVariables.WORLD_WIDTH * 0.16f,GlobalVariables.WORLD_HEIGHT * 0.32f,
                 currentFrame.getRegionWidth() * 0.56f,currentFrame.getRegionHeight() * 0.56f);
     }
 
+    public void changeProductivityState(ProductivityState newState){
+        productivityState = newState;
+    }
 }
