@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 
 public class Assets {
     public final AssetManager manager = new AssetManager();
-    //gameplay assets
+    //gameplay assets: golf
     public static final String BACKGROUND_TEXTURE = "textures/BG.png";
     public static final String DESK_TEXTURE = "textures/desk.png";
     public static final String IDLE_SPRITESHEET = "sprite/Idle.png";
@@ -21,6 +21,9 @@ public class Assets {
 
     //enemies
     public static final String SALAD_BOX_TEXTURE = "sprite/SaladBox.png";
+
+    //Sarah
+    public static final String SARAH_WORKING_TEXTURE = "sprite/SarahWorking.png";
 
     //fonts
     public static final String OPENSANS_REGULAR = "fonts/OpenSans-Regular.ttf";
@@ -37,11 +40,15 @@ public class Assets {
     private void loadGameplayAssets(){
         manager.load(BACKGROUND_TEXTURE, Texture.class);
         manager.load(DESK_TEXTURE,Texture.class);
+        manager.load(SALAD_BOX_TEXTURE, Texture.class);
 
+        //load Golf sprite
         manager.load(IDLE_SPRITESHEET, Texture.class);
         manager.load(IDLE_RESIZE_SPRITESHEET, Texture.class);
-        manager.load(SALAD_BOX_TEXTURE, Texture.class);
         manager.load(EATING_BOX_SPRITESHEET, Texture.class);
+
+        //load Sarah sprite
+        manager.load(SARAH_WORKING_TEXTURE, Texture.class);
     }
 
     private void loadFonts(){

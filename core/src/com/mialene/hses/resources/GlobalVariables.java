@@ -11,6 +11,6 @@ public class GlobalVariables {
     //colors
     public static final Color GOLD = new Color(0.94f,0.85f,0.32f,1f);
     public static final Color BLUEISH = new Color(0.4f,0.59f,0.92f,1f);
-    public static final Color YUCK = new Color(0.18f,0.23f,0.03f,1f);
+    public static final Color YUCK = new Color(0.47f,0.85f,0.33f,1f);
 
 }

@@ -59,6 +59,7 @@ public class GameScreen implements Screen, InputProcessor {
     private float HUDMargin = 20f;
     private static final Color PRODUCTIVITY_BAR_COLOR = GlobalVariables.GOLD;
     private static final Color MAX_BACKGROUND_COLOR = GlobalVariables.BLUEISH;
+    private static final Color YUCK_BACKGROUND_COLOR = GlobalVariables.YUCK;
     //HUD productivity bar
     private float productivityBarPadding; //for gold bar vs the percent text
     private float productivityBarMaxHeight; //the main one when it progressed to the max
@@ -92,7 +93,7 @@ public class GameScreen implements Screen, InputProcessor {
         //
         createGameArea();
         setUpFonts();
-        sarah = new Sarah();
+        sarah = new Sarah(game);
     }
 
     private void createGameArea(){
@@ -148,6 +149,7 @@ public class GameScreen implements Screen, InputProcessor {
         update(deltaTime);
         batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
         golf.renderGolf(batch, deltaTime);
+        sarah.renderSarah(batch,deltaTime);
         desk.draw(batch);
 
         //drawSaladBar
@@ -170,6 +172,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     private void update(float deltaTime){
+        //set things in motion after starting delay
         if(dayState == DayState.STARTING && dayStateTime >= START_DAY_DELAY){
             //if the 3 seconds delay has passed, start the day
             sarah.setProductivity(0);
@@ -177,6 +180,7 @@ public class GameScreen implements Screen, InputProcessor {
             dayStateTime = 0f;
             sarah.changeState(Sarah.SarahState.WORKING);
         } else if (dayState == DayState.ENDING && dayStateTime >= END_DAY_DELAY) {
+            //game over or restart after ending delay
             if(life <= 0){
                 gameState = GameState.GAME_OVER;
             }else {
@@ -186,13 +190,14 @@ public class GameScreen implements Screen, InputProcessor {
             dayStateTime += deltaTime;
         }
 
-        if(sarah.productivity >= sarah.workload && sarah.sarahState == Sarah.SarahState.WORKING){
+        //block 2, determine whether this day should lose or win
+        if(sarah.productivity >= sarah.workload && dayState == DayState.IN_PROGRESS){
             winDay();
         } else if (dayTimer <= 0) {
             loseDay();
         }
 
-        //decrease the timer
+        //the cog of timer and working during the day "IN_PROGRESS" (only decrease timer during IN_PROGRESS)
         if(dayState == DayState.IN_PROGRESS){
             dayTimer -= deltaTime;
             sarah.working(deltaTime);
@@ -209,6 +214,9 @@ public class GameScreen implements Screen, InputProcessor {
             if(golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
                 iterator.remove();
                 golf.makeGolfEatBox();
+            }else if(sarah.intersectDeathBox(salad.getBoundingBox())){
+                iterator.remove();
+                sarah.changeState(Sarah.SarahState.EATING);
             }
             }
     }
@@ -257,7 +265,11 @@ public class GameScreen implements Screen, InputProcessor {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         //draw the max background bar
-        shapeRenderer.setColor(MAX_BACKGROUND_COLOR);
+        if(sarah.sarahState == Sarah.SarahState.EATING){
+            shapeRenderer.setColor(YUCK_BACKGROUND_COLOR);
+        }else {
+            shapeRenderer.setColor(MAX_BACKGROUND_COLOR);
+        }
         shapeRenderer.rect(HUDMargin,maxBackgroundBarPositionY,maxBackgroundBarWidth,maxBackgroundBarHeight);
 
         shapeRenderer.setColor(PRODUCTIVITY_BAR_COLOR);

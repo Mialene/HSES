@@ -1,56 +1,128 @@
 package com.mialene.hses.objects;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.mialene.hses.HSES;
+import com.mialene.hses.resources.Assets;
+import com.mialene.hses.resources.GlobalVariables;
+
 
 public class Sarah {
-    public enum SarahState{//determine the productivity bar progress
+    private final HSES game;
+    public enum SarahState {//determine the productivity bar progress
         WORKING,
         EATING,
         CELEBRATING,
         CRYING
     }
 
-    public enum ProductivityState{//to display the state text
+    public enum ProductivityState {//to display the state text
         STARTING,
         HALFWAY,
         ALMOST,
         DONE,
         STOP
     }
+
     public SarahState sarahState;
-    private TextureRegion textureRegion;
-    private float sarahPostionX, getSarahPostionY, sarahWidth, sarahHeight;
     public float workload = 1000;
     public float productivity;
+    private float stateTime;
+    Rectangle deathBox;
 
-    public Sarah() {
+    //for animations
+    private Texture workingTexture;
+    private Animation<TextureRegion> workingAnimation;
+    private TextureRegion[] allFrames;
+    private TextureRegion currentFrame;
+
+    public Sarah(HSES game) {
+        this.game = game;
 
         productivity = 0;
-        sarahState = SarahState.CELEBRATING;
+        sarahState = SarahState.WORKING;
+        deathBox = new Rectangle(0,0, GlobalVariables.WORLD_WIDTH * 0.25f,GlobalVariables.WORLD_HEIGHT);
+
+        initializeWorkingAnimation();
+
+        stateTime = 0;
     }
 
-    public void update(float deltaTime){
+    public void update(float stateTime) {
 
+        if(isSarahFinishedEating(stateTime)){
+            changeState(SarahState.WORKING);
+        }
     }
 
-    public void working(float deltaTime){
-        if(sarahState == SarahState.WORKING){
+    public void working(float deltaTime) {
+        if (sarahState == SarahState.WORKING) {
             productivity += 15 * deltaTime;
         }
     }
-    public void setProductivity(float num){
+
+    public void setProductivity(float num) {
         this.productivity = num;
     }
 
-    public float getProductivity(){
+    public float getProductivity() {
         return productivity;
     }
 
-    public float getWorkload(){
+    public float getWorkload() {
         return workload;
     }
 
-    public void changeState(SarahState state){
-        sarahState = state;
+    public void changeState(SarahState newState) {
+        sarahState = newState;
+        stateTime = 0;
     }
+
+    public boolean intersectDeathBox(Rectangle otherRectangle){
+        return deathBox.overlaps(otherRectangle);
+    }
+
+    public boolean isSarahFinishedEating(float stateTime) {
+        return stateTime >= 3;
+    }
+
+    private void initializeWorkingAnimation(){
+        workingTexture = game.assets.manager.get(Assets.SARAH_WORKING_TEXTURE);
+        allFrames = splitToArray(workingTexture);
+        workingAnimation = new Animation<>(0.09f,allFrames);
+    }
+
+    private TextureRegion[] splitToArray(Texture texture){
+        TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth() / 2, texture.getHeight() / 2);
+                allFrames = new TextureRegion[4];
+                int index = 0;
+                for(int i = 0; i < 2; i++){
+                    for(int j = 0; j < 2; j++){
+                        allFrames[index++] = tmp[i][j];
+                    }
+                }
+                return allFrames;
+    }
+
+    public void renderSarah(Batch batch, float deltaTime){
+        stateTime += deltaTime;
+        update(stateTime);
+
+        switch (sarahState){
+            /*
+            case WORKING:
+                currentFrame = workingAnimation.getKeyFrame(stateTime,true);
+                break;
+
+             */
+            default:
+                currentFrame = workingAnimation.getKeyFrame(stateTime,true);
+        }
+        batch.draw(currentFrame,GlobalVariables.WORLD_WIDTH * 0.16f,GlobalVariables.WORLD_HEIGHT * 0.32f,
+                currentFrame.getRegionWidth() * 0.56f,currentFrame.getRegionHeight() * 0.56f);
+    }
+
 }
