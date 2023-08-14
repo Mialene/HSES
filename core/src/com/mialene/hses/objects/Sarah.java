@@ -35,8 +35,8 @@ public class Sarah {
     Rectangle deathBox;
 
     //for animations
-    private Texture workingTexture, eatingTexture;
-    private Animation<TextureRegion> workingAnimation, eatingAnimation;
+    private Texture workingTexture, eatingTexture, celebratingTexture;
+    private Animation<TextureRegion> workingAnimation, eatingAnimation, celebratingAnimation;
     private TextureRegion[] allFrames;
     private TextureRegion currentFrame;
 
@@ -50,6 +50,7 @@ public class Sarah {
 
         initializeWorkingAnimation();
         initializeEatingAnimation();
+        initializeCelebratingAnimation();
 
         stateTime = 0;
     }
@@ -104,6 +105,12 @@ public class Sarah {
         eatingAnimation = new Animation<>(0.09f,allFrames);
     }
 
+    private void initializeCelebratingAnimation(){
+        celebratingTexture = game.assets.manager.get(Assets.SARAH_CELEBRATING_SPRITESHEET);
+        allFrames = splitToArray(celebratingTexture);
+        celebratingAnimation = new Animation<>(0.09f,allFrames);
+    }
+
     private TextureRegion[] splitToArray(Texture texture){
         TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth() / 2, texture.getHeight() / 2);
                 allFrames = new TextureRegion[4];
@@ -123,6 +130,9 @@ public class Sarah {
         switch (sarahState){
             case WORKING:
                 currentFrame = workingAnimation.getKeyFrame(stateTime,true);
+                break;
+            case CELEBRATING:
+                currentFrame = celebratingAnimation.getKeyFrame(stateTime,true);
                 break;
             case EATING:
                 currentFrame = eatingAnimation.getKeyFrame(stateTime,true);

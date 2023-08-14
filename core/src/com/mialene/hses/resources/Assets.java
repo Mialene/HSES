@@ -25,6 +25,7 @@ public class Assets {
     //Sarah
     public static final String SARAH_WORKING_SPRITESHEET = "sprite/SarahWorking.png";
     public static final String SARAH_EATING_SPRITESHEET = "sprite/SarahEating.png";
+    public static final String SARAH_CELEBRATING_SPRITESHEET = "sprite/SarahCelebrating.png";
 
     //fonts
     public static final String OPENSANS_REGULAR = "fonts/OpenSans-Regular.ttf";
@@ -51,6 +52,7 @@ public class Assets {
         //load Sarah sprite
         manager.load(SARAH_WORKING_SPRITESHEET, Texture.class);
         manager.load(SARAH_EATING_SPRITESHEET, Texture.class);
+        manager.load(SARAH_CELEBRATING_SPRITESHEET, Texture.class);
     }
 
     private void loadFonts(){
