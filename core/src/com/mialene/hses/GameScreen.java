@@ -5,9 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -49,7 +52,7 @@ public class GameScreen implements Screen, InputProcessor {
     private int life = 1;
 
     //remaining time of the day
-    private static final float MAX_REMAINING_TIME = 99.99f;
+    private static final float MAX_REMAINING_TIME = 9.99f;
     private float dayTimer;
     //fonts
     private BitmapFont smallFont, mediumFont,largeFont;
@@ -68,9 +71,13 @@ public class GameScreen implements Screen, InputProcessor {
     private float maxBackgroundBarWidth; //the width of the blueish
     private float maxBackgroundBarMarginBottom; //space from bottom text
 
-
     //All Texture;
     private Texture bgTexture, deskTexture, saladBoxTexture;
+    //buttons
+    private Sprite newGameButtonSprite;
+    private Sprite menuButtonSprite;
+    private Sprite resumeButtonSprite;
+    private Sprite pauseButtonSprite;
 
 
     //game objects
@@ -92,6 +99,7 @@ public class GameScreen implements Screen, InputProcessor {
         //
         createGameArea();
         setUpFonts();
+        createButtons();
         sarah = new Sarah(game);
     }
 
@@ -136,6 +144,13 @@ public class GameScreen implements Screen, InputProcessor {
         largeFont.setUseIntegerPositions(false);
     }
 
+    private void createButtons(){
+        TextureAtlas buttonTextureAtlas = game.assets.manager.get(Assets.GAMEPLAY_BUTTONS_ATLAS);
+        newGameButtonSprite = new Sprite(buttonTextureAtlas.findRegion("New game Button"));
+
+        menuButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Menu Button"));
+    }
+
 
     @Override
     public void render(float deltaTime) {
@@ -158,19 +173,27 @@ public class GameScreen implements Screen, InputProcessor {
 
         //draw the HUD
         renderHUD();
-        if(dayState == DayState.STARTING){
-            renderStartRoundText();
+
+        //if the game is over
+        if(gameState == GameState.GAME_OVER){
+            renderGameOverOverLay();
+        }else {
+            if (dayState == DayState.STARTING) {
+                renderStartRoundText();
+            }
         }
 
 
         batch.end();
-
+/*
         elapsedSeconds += deltaTime;
 
         if (elapsedSeconds >= 1) {
             System.out.println(saladBar.saladList.size());
             elapsedSeconds = 0; // Reset the elapsed time
         }
+
+ */
     }
 
     private void update(float deltaTime){
@@ -195,7 +218,7 @@ public class GameScreen implements Screen, InputProcessor {
         //block 2, determine whether this day should lose or win
         if(sarah.productivity >= sarah.workload && dayState == DayState.IN_PROGRESS){
             winDay();
-        } else if (dayTimer <= 0) {
+        } else if (dayTimer <= 0 && dayState == DayState.IN_PROGRESS) {
             loseDay();
         }
 
@@ -312,6 +335,36 @@ public class GameScreen implements Screen, InputProcessor {
                 0,Align.center,false);
     }
 
+    private void renderGameOverOverLay(){
+        //cover the game area with black rectangle
+        batch.end();
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0,0,0,0.7f);
+        shapeRenderer.rect(0,0,GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        batch.begin();
+
+        // calculate the layout dimensions
+        float textMarginBottom = 100f;
+        float buttonSpacing = 2f;
+        float layoutHeight = largeFont.getCapHeight() + textMarginBottom + newGameButtonSprite.getHeight() + buttonSpacing +
+                menuButtonSprite.getHeight();
+        float layoutPositionY = viewport.getWorldHeight() / 2f - layoutHeight / 2f;
+
+        //draw the button
+        menuButtonSprite.setPosition(viewport.getWorldWidth() / 2f - menuButtonSprite.getWidth() / 2f,layoutPositionY);
+        menuButtonSprite.draw(batch);
+        newGameButtonSprite.setPosition(viewport.getWorldWidth() / 2f - newGameButtonSprite.getWidth() / 2f,
+                layoutPositionY + menuButtonSprite.getHeight() + buttonSpacing);
+        newGameButtonSprite.draw(batch);
+        largeFont.draw(batch,"GAME OVER",viewport.getWorldWidth() / 2f,
+                newGameButtonSprite.getY() + newGameButtonSprite.getHeight() + textMarginBottom + largeFont.getCapHeight(),
+                0,Align.center,false);
+    }
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width,height,true);
@@ -354,14 +407,15 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void loseDay(){
         //call the method that will refer to Sarah's lose animation later
-
         life--;
+        System.out.println("life minus");
         endDay();
     }
 
     private void endDay(){
         dayState = DayState.ENDING;
         dayStateTime = 0;
+        System.out.println("the day is over");
     }
 
     @Override
