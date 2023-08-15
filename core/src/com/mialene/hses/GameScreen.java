@@ -42,7 +42,7 @@ public class GameScreen implements Screen, InputProcessor {
         ENDING
     }
     private DayState dayState;
-    private final float START_DAY_DELAY = 3f;
+    private final float START_DAY_DELAY = 2f;
     private final float END_DAY_DELAY = 3f;
     private int currentDay;
     private float dayStateTime;
@@ -158,6 +158,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         //draw the HUD
         renderHUD();
+        if(dayState == DayState.STARTING){
+            renderStartRoundText();
+        }
 
 
         batch.end();
@@ -213,7 +216,7 @@ public class GameScreen implements Screen, InputProcessor {
             if(golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
                 iterator.remove();
                 golf.makeGolfEatBox();
-            }else if(sarah.intersectDeathBox(salad.getBoundingBox())){
+            }else if(sarah.intersectDeathBox(salad.getBoundingBox()) && dayState == DayState.IN_PROGRESS){
                 iterator.remove();
                 sarah.changeState(Sarah.SarahState.EATING);
             }
@@ -278,12 +281,12 @@ public class GameScreen implements Screen, InputProcessor {
 
         //draw the percent
         int percent = (int) (sarah.productivity / sarah.workload * 100);
-        smallFont.draw(batch,percent + "%",100, GlobalVariables.WORLD_HEIGHT / 2f + smallFont.getCapHeight() / 2f,
+        smallFont.draw(batch,percent + "%",100, viewport.getWorldHeight() / 2f + smallFont.getCapHeight() / 2f,
                 productivityBarWidth, Align.center,false);
 
         //draw the day timer
         mediumFont.draw(batch,Integer.toString((int) dayTimer),
-                GlobalVariables.WORLD_WIDTH / 2f,GlobalVariables.WORLD_HEIGHT - HUDMargin,
+                viewport.getWorldWidth() / 2f,viewport.getWorldHeight() - HUDMargin,
                 0,Align.center,false);
 
         //change productivity state
@@ -296,7 +299,17 @@ public class GameScreen implements Screen, InputProcessor {
         } else {
             sarah.changeProductivityState(Sarah.ProductivityState.STARTING);
         }
+    }
 
+    private void renderStartRoundText(){
+        String text;
+        if(dayStateTime < START_DAY_DELAY * 0.5){
+            text = "Day " + currentDay;
+        }else {
+            text = "START";
+        }
+        mediumFont.draw(batch,text,viewport.getWorldWidth() / 2f,(viewport.getWorldHeight() + mediumFont.getCapHeight()) / 2f,
+                0,Align.center,false);
     }
 
     @Override

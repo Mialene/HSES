@@ -1,0 +1,34 @@
+
+GameplayButtons.png
+size: 2048, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Menu Button
+  rotate: false
+  xy: 1206, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+New game Button
+  rotate: false
+  xy: 604, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+Pause Square Button
+  rotate: false
+  xy: 1808, 2
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Resume Button
+  rotate: false
+  xy: 2, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
