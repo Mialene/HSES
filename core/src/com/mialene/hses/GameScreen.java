@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -33,17 +34,20 @@ public class GameScreen implements Screen, InputProcessor {
 
     //game state and day state and timer
     //I don't under each part yet but let's make my game replayable !!First step!!
-    private enum GameState{
+    private enum GameState {
         RUNNING,
         PAUSED,
         GAME_OVER
     }
+
     private GameState gameState;
-    private enum DayState{
+
+    private enum DayState {
         STARTING,
         IN_PROGRESS,
         ENDING
     }
+
     private DayState dayState;
     private final float START_DAY_DELAY = 2f;
     private final float END_DAY_DELAY = 3f;
@@ -52,10 +56,10 @@ public class GameScreen implements Screen, InputProcessor {
     private int life = 1;
 
     //remaining time of the day
-    private static final float MAX_REMAINING_TIME = 9.99f;
+    private static final float MAX_REMAINING_TIME = 99.99f;
     private float dayTimer;
     //fonts
-    private BitmapFont smallFont, mediumFont,largeFont;
+    private BitmapFont smallFont, mediumFont, largeFont;
     private static final Color DEFAULT_FONT_COLOR = Color.WHITE;
     //HUD
     private float HUDMargin = 20f;
@@ -87,9 +91,10 @@ public class GameScreen implements Screen, InputProcessor {
     SaladBar saladBar;
 
     private float elapsedSeconds = 0;
-    GameScreen(HSES game){
+
+    GameScreen(HSES game) {
         this.game = game;
-        viewport = new FitViewport(2436,1125);
+        viewport = new FitViewport(2436, 1125);
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
@@ -103,7 +108,7 @@ public class GameScreen implements Screen, InputProcessor {
         sarah = new Sarah(game);
     }
 
-    private void createGameArea(){
+    private void createGameArea() {
         bgTexture = game.assets.manager.get(Assets.BACKGROUND_TEXTURE);
         deskTexture = game.assets.manager.get(Assets.DESK_TEXTURE);
 
@@ -113,21 +118,22 @@ public class GameScreen implements Screen, InputProcessor {
                 deskTexture.getWidth(),
                 deskTexture.getHeight());
     }
-    private void getGolfReady(){
+
+    private void getGolfReady() {
         golf = new Golf(game);
     }
 
     //prepare the salads
-    private void prepareSalad(){
+    private void prepareSalad() {
         saladBoxTexture = game.assets.manager.get(Assets.SALAD_BOX_TEXTURE);
         //saladList = new LinkedList<>();
 
-        saladBar = new SaladBar(2436f,555f,5f,1125f,
-                saladBoxTexture.getWidth() * 0.5f,saladBoxTexture.getHeight() * 0.5f,200f
-        ,saladBoxTexture,5f);
+        saladBar = new SaladBar(2436f, 555f, 5f, 1125f,
+                saladBoxTexture.getWidth() * 0.5f, saladBoxTexture.getHeight() * 0.5f, 200f
+                , saladBoxTexture, 5f);
     }
 
-    private void setUpFonts(){
+    private void setUpFonts() {
         smallFont = game.assets.manager.get(Assets.SMALL_FONT);
         //smallFont.getData().setScale(GlobalVariables.WORLD_SCALE);
         smallFont.setColor(DEFAULT_FONT_COLOR);
@@ -144,30 +150,32 @@ public class GameScreen implements Screen, InputProcessor {
         largeFont.setUseIntegerPositions(false);
     }
 
-    private void createButtons(){
+    private void createButtons() {
         TextureAtlas buttonTextureAtlas = game.assets.manager.get(Assets.GAMEPLAY_BUTTONS_ATLAS);
         newGameButtonSprite = new Sprite(buttonTextureAtlas.findRegion("New game Button"));
-
         menuButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Menu Button"));
+
+        resumeButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Resume Button"));
+        pauseButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Pause Square Button"));
+        pauseButtonSprite.setSize(pauseButtonSprite.getWidth() * 0.5f,pauseButtonSprite.getHeight() * 0.5f);
     }
 
 
     @Override
-    public void render(float deltaTime) {
-        ScreenUtils.clear(0,0,0,1);
+    public void render(float delta) {
+        ScreenUtils.clear(0, 0, 0, 1);
         batch.begin();
+        batch.draw(bgTexture, 0, 0, GlobalVariables.WORLD_WIDTH, GlobalVariables.WORLD_HEIGHT);
 
-
-        saladBar.update(deltaTime);
+        float deltaTime = gameState == GameState.RUNNING ? delta : 0f;
 
         update(deltaTime);
-        batch.draw(bgTexture,0,0, GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
+        saladBar.update(deltaTime);
         golf.renderGolf(batch, deltaTime);
-        sarah.renderSarah(batch,deltaTime);
+        sarah.renderSarah(batch, deltaTime);
         desk.draw(batch);
-
         //drawSaladBar
-        saladBar.renderSalad(batch,deltaTime);
+        saladBar.renderSalad(batch, deltaTime);
         //detect collisiion
         detectCollision(deltaTime);
 
@@ -175,11 +183,14 @@ public class GameScreen implements Screen, InputProcessor {
         renderHUD();
 
         //if the game is over
-        if(gameState == GameState.GAME_OVER){
+        if (gameState == GameState.GAME_OVER) {
             renderGameOverOverLay();
-        }else {
+        } else {
             if (dayState == DayState.STARTING) {
                 renderStartRoundText();
+            }
+            if (gameState == GameState.PAUSED) {
+                renderPauseOverlay();
             }
         }
 
@@ -196,9 +207,9 @@ public class GameScreen implements Screen, InputProcessor {
  */
     }
 
-    private void update(float deltaTime){
+    private void update(float deltaTime) {
         //set things in motion after starting delay
-        if(dayState == DayState.STARTING && dayStateTime >= START_DAY_DELAY){
+        if (dayState == DayState.STARTING && dayStateTime >= START_DAY_DELAY) {
             //if the 3 seconds delay has passed, start the day
             sarah.setProductivity(0);
             dayState = DayState.IN_PROGRESS;
@@ -206,24 +217,24 @@ public class GameScreen implements Screen, InputProcessor {
             sarah.changeState(Sarah.SarahState.WORKING);
         } else if (dayState == DayState.ENDING && dayStateTime >= END_DAY_DELAY) {
             //game over or restart after ending delay
-            if(life <= 0){
+            if (life <= 0) {
                 gameState = GameState.GAME_OVER;
-            }else {
+            } else {
                 startDay();
             }
-        }else{
+        } else {
             dayStateTime += deltaTime;
         }
 
         //block 2, determine whether this day should lose or win
-        if(sarah.productivity >= sarah.workload && dayState == DayState.IN_PROGRESS){
+        if (sarah.productivity >= sarah.workload && dayState == DayState.IN_PROGRESS) {
             winDay();
         } else if (dayTimer <= 0 && dayState == DayState.IN_PROGRESS) {
             loseDay();
         }
 
         //the cog of timer and working during the day "IN_PROGRESS" (only decrease timer during IN_PROGRESS)
-        if(dayState == DayState.IN_PROGRESS){
+        if (dayState == DayState.IN_PROGRESS) {
             dayTimer -= deltaTime;
             sarah.working(deltaTime);
         }
@@ -231,29 +242,29 @@ public class GameScreen implements Screen, InputProcessor {
 
     }
 
-    private void detectCollision(float delTatime){
+    private void detectCollision(float delTatime) {
         //check if the rectangle is intersects
         ListIterator<Salad> iterator = SaladBar.saladList.listIterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Salad salad = iterator.next();
-            if(golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
+            if (golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
                 iterator.remove();
                 golf.makeGolfEatBox();
-            }else if(sarah.intersectDeathBox(salad.getBoundingBox()) && dayState == DayState.IN_PROGRESS){
+            } else if (sarah.intersectDeathBox(salad.getBoundingBox()) && dayState == DayState.IN_PROGRESS) {
                 iterator.remove();
                 sarah.changeState(Sarah.SarahState.EATING);
             }
-            }
+        }
     }
 
-    private void renderHUD(){
+    private void renderHUD() {
 
         //draw the current day
-        smallFont.draw(batch,"Day: " + currentDay,HUDMargin,viewport.getWorldHeight() - HUDMargin);
+        smallFont.draw(batch, "Day: " + currentDay, HUDMargin, viewport.getWorldHeight() - HUDMargin);
 
         //draw the productivity state
         String text;
-        switch (sarah.productivityState){
+        switch (sarah.productivityState) {
             case STARTING:
                 text = "STARTING";
                 break;
@@ -266,7 +277,7 @@ public class GameScreen implements Screen, InputProcessor {
             default:
                 text = "FINISHED";
         }
-        smallFont.draw(batch,"Productivity: " + text,HUDMargin,HUDMargin + smallFont.getCapHeight());
+        smallFont.draw(batch, "Productivity: " + text, HUDMargin, HUDMargin + smallFont.getCapHeight());
 
         //set up the productivity bar
         productivityBarPadding = 10;
@@ -288,15 +299,15 @@ public class GameScreen implements Screen, InputProcessor {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         //draw the max background bar
-        if(sarah.sarahState == Sarah.SarahState.EATING){
+        if (sarah.sarahState == Sarah.SarahState.EATING) {
             shapeRenderer.setColor(YUCK_BACKGROUND_COLOR);
-        }else {
+        } else {
             shapeRenderer.setColor(MAX_BACKGROUND_COLOR);
         }
-        shapeRenderer.rect(HUDMargin,maxBackgroundBarPositionY,maxBackgroundBarWidth,maxBackgroundBarHeight);
+        shapeRenderer.rect(HUDMargin, maxBackgroundBarPositionY, maxBackgroundBarWidth, maxBackgroundBarHeight);
 
         shapeRenderer.setColor(PRODUCTIVITY_BAR_COLOR);
-        shapeRenderer.rect(HUDMargin + productivityBarPadding,productivityBarPositionY,productivityBarWidth,
+        shapeRenderer.rect(HUDMargin + productivityBarPadding, productivityBarPositionY, productivityBarWidth,
                 productivityBarMaxHeight * sarah.getProductivity() / sarah.getWorkload());
 
         shapeRenderer.end();
@@ -304,13 +315,13 @@ public class GameScreen implements Screen, InputProcessor {
 
         //draw the percent
         int percent = (int) (sarah.productivity / sarah.workload * 100);
-        smallFont.draw(batch,percent + "%",100, viewport.getWorldHeight() / 2f + smallFont.getCapHeight() / 2f,
-                productivityBarWidth, Align.center,false);
+        smallFont.draw(batch, percent + "%", 100, viewport.getWorldHeight() / 2f + smallFont.getCapHeight() / 2f,
+                productivityBarWidth, Align.center, false);
 
         //draw the day timer
-        mediumFont.draw(batch,Integer.toString((int) dayTimer),
-                viewport.getWorldWidth() / 2f,viewport.getWorldHeight() - HUDMargin,
-                0,Align.center,false);
+        mediumFont.draw(batch, Integer.toString((int) dayTimer),
+                viewport.getWorldWidth() / 2f, viewport.getWorldHeight() - HUDMargin,
+                0, Align.center, false);
 
         //change productivity state
         if (percent >= 50 && percent < 80) {
@@ -322,27 +333,32 @@ public class GameScreen implements Screen, InputProcessor {
         } else {
             sarah.changeProductivityState(Sarah.ProductivityState.STARTING);
         }
+
+        //render pause button
+        pauseButtonSprite.setPosition(viewport.getWorldWidth() - pauseButtonSprite.getWidth() - HUDMargin,
+                viewport.getWorldHeight() - HUDMargin - pauseButtonSprite.getHeight());
+        pauseButtonSprite.draw(batch);
     }
 
-    private void renderStartRoundText(){
+    private void renderStartRoundText() {
         String text;
-        if(dayStateTime < START_DAY_DELAY * 0.5){
+        if (dayStateTime < START_DAY_DELAY * 0.5) {
             text = "Day " + currentDay;
-        }else {
+        } else {
             text = "START";
         }
-        mediumFont.draw(batch,text,viewport.getWorldWidth() / 2f,(viewport.getWorldHeight() + mediumFont.getCapHeight()) / 2f,
-                0,Align.center,false);
+        mediumFont.draw(batch, text, viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() + mediumFont.getCapHeight()) / 2f,
+                0, Align.center, false);
     }
 
-    private void renderGameOverOverLay(){
+    private void renderGameOverOverLay() {
         //cover the game area with black rectangle
         batch.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0,0,0,0.7f);
-        shapeRenderer.rect(0,0,GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT);
+        shapeRenderer.setColor(0, 0, 0, 0.7f);
+        shapeRenderer.rect(0, 0, GlobalVariables.WORLD_WIDTH, GlobalVariables.WORLD_HEIGHT);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         batch.begin();
@@ -355,19 +371,48 @@ public class GameScreen implements Screen, InputProcessor {
         float layoutPositionY = viewport.getWorldHeight() / 2f - layoutHeight / 2f;
 
         //draw the button
-        menuButtonSprite.setPosition(viewport.getWorldWidth() / 2f - menuButtonSprite.getWidth() / 2f,layoutPositionY);
+        menuButtonSprite.setPosition(viewport.getWorldWidth() / 2f - menuButtonSprite.getWidth() / 2f, layoutPositionY);
         menuButtonSprite.draw(batch);
         newGameButtonSprite.setPosition(viewport.getWorldWidth() / 2f - newGameButtonSprite.getWidth() / 2f,
                 layoutPositionY + menuButtonSprite.getHeight() + buttonSpacing);
         newGameButtonSprite.draw(batch);
-        largeFont.draw(batch,"GAME OVER",viewport.getWorldWidth() / 2f,
+        largeFont.draw(batch, "GAME OVER", viewport.getWorldWidth() / 2f,
                 newGameButtonSprite.getY() + newGameButtonSprite.getHeight() + textMarginBottom + largeFont.getCapHeight(),
-                0,Align.center,false);
+                0, Align.center, false);
+    }
+
+    private void renderPauseOverlay() {
+        batch.end();
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.45f, 0.8f, 0.4f, 0.7f);
+        shapeRenderer.rect(0, 0, GlobalVariables.WORLD_WIDTH, GlobalVariables.WORLD_HEIGHT);
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        batch.begin();
+        // calculate the layout dimensions
+        float textMarginBottom = 100f;
+        float buttonSpacing = 2f;
+        float layoutHeight = largeFont.getCapHeight() + textMarginBottom + resumeButtonSprite.getHeight() + buttonSpacing +
+                menuButtonSprite.getHeight();
+        float layoutPositionY = viewport.getWorldHeight() / 2f - layoutHeight / 2f;
+
+        //draw the button
+        menuButtonSprite.setPosition(viewport.getWorldWidth() / 2f - menuButtonSprite.getWidth() / 2f, layoutPositionY);
+        menuButtonSprite.draw(batch);
+        resumeButtonSprite.setPosition(viewport.getWorldWidth() / 2f - resumeButtonSprite.getWidth() / 2f,
+                layoutPositionY + resumeButtonSprite.getHeight() + buttonSpacing);
+        resumeButtonSprite.draw(batch);
+        largeFont.draw(batch, "PAUSED", viewport.getWorldWidth() / 2f,
+                resumeButtonSprite.getY() + resumeButtonSprite.getHeight() + textMarginBottom + largeFont.getCapHeight(),
+                0, Align.center, false);
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height,true);
+        viewport.update(width, height, true);
         batch.setProjectionMatrix(viewport.getCamera().combined);
     }
 
@@ -377,13 +422,13 @@ public class GameScreen implements Screen, InputProcessor {
         startGame();
     }
 
-    private void startGame(){
+    private void startGame() {
         gameState = GameState.RUNNING;
         currentDay = 1;
         startDay();
     }
 
-    private void startDay(){
+    private void startDay() {
         /* Because we have to
         1. Reset Golf and Sarah's state and position
         2. the SaladBar needs to be reconstructed cause more days = more speed and frequency of salads
@@ -397,7 +442,7 @@ public class GameScreen implements Screen, InputProcessor {
         dayTimer = MAX_REMAINING_TIME;
     }
 
-    private void winDay(){
+    private void winDay() {
         //call the method that will refer to Sarah's win animation later
 
         currentDay++;
@@ -405,14 +450,14 @@ public class GameScreen implements Screen, InputProcessor {
         endDay();
     }
 
-    private void loseDay(){
+    private void loseDay() {
         //call the method that will refer to Sarah's lose animation later
         life--;
         System.out.println("life minus");
         endDay();
     }
 
-    private void endDay(){
+    private void endDay() {
         dayState = DayState.ENDING;
         dayStateTime = 0;
         System.out.println("the day is over");
@@ -442,7 +487,8 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         //movement
-
+        if(gameState == GameState.RUNNING) {
+        //player can't move if game is paused or over
             if (keycode == Input.Keys.A) {
                 golf.moveLeft();
             } else if (keycode == Input.Keys.D) {
@@ -454,20 +500,21 @@ public class GameScreen implements Screen, InputProcessor {
             } else if (keycode == Input.Keys.S) {
                 golf.moveDown();
             }
+        }
 
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if(keycode == Input.Keys.A){
+        if (keycode == Input.Keys.A) {
             golf.stopMovingLeft();
         } else if (keycode == Input.Keys.D) {
             golf.stopMovingRight();
         }
-        if(keycode == Input.Keys.W || keycode == Input.Keys.UP){
+        if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {
             golf.stopMovingUp();
-        }else if(keycode == Input.Keys.S){
+        } else if (keycode == Input.Keys.S) {
             golf.stopMovingDown();
         }
 
@@ -481,6 +528,18 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //convert the screen coordinate to world coordinate
+        Vector3 position = new Vector3(screenX, screenY, 0);
+        viewport.getCamera().unproject(position, viewport.getScreenX(), viewport.getScreenY(),
+                viewport.getScreenWidth(), viewport.getScreenHeight());
+
+        if (gameState == GameState.GAME_OVER && newGameButtonSprite.getBoundingRectangle().contains(position.x, position.y)) {
+            startGame();
+        }else if(gameState == GameState.RUNNING && pauseButtonSprite.getBoundingRectangle().contains(position.x,position.y)){
+            gameState = GameState.PAUSED;
+        }else if(gameState == GameState.PAUSED && resumeButtonSprite.getBoundingRectangle().contains(position.x,position.y)){
+            gameState = GameState.RUNNING;
+        }
         return false;
     }
 
