@@ -17,15 +17,15 @@ public class SaladBar {
 
     //salad Characteristics
     protected float saladWidth, saladHeight;
-    public float saladMoveSpeed;
+    public float saladMaxMoveSpeed;
     public Texture saladTexture;
     public float timeBetweenServe;
     public float timeSinceLastServe = 0;
     public static LinkedList<Salad> saladList;
 
     public SaladBar(float barPositionX, float barPositionY, float barWidth, float barHeight,
-                    float saladWidth, float saladHeight,float saladMoveSpeed, Texture saladTexture,
-                    float timeBetweenServe) {
+                    float saladWidth, float saladHeight, float saladMaxMoveSpeed, Texture saladTexture,
+                    float timeBetweenServe,int dayCount) {
         this.barPositionX = barPositionX; //bar characteristics
         this.barPositionY = barPositionY;
         this.barWidth = barWidth;
@@ -34,8 +34,8 @@ public class SaladBar {
         this.saladWidth = saladWidth; //starting here is salad characteristics
         this.saladHeight = saladHeight;
         this.saladTexture = saladTexture;
-        this.saladMoveSpeed = saladMoveSpeed;
-        this.timeBetweenServe = timeBetweenServe;
+        this.saladMaxMoveSpeed = saladMaxMoveSpeed;
+        this.timeBetweenServe = timeBetweenServe - 0.1f * dayCount;
 
         saladList = new LinkedList<>();
     }
@@ -48,35 +48,32 @@ public class SaladBar {
         return timeSinceLastServe - timeBetweenServe >= 0 && saladList.size() <= 5;
     }
 
-    public Salad[] serveSalad(){
-        Salad[] salads = new Salad[(random.nextInt(5))];
+    public Salad[] serveSalad(int dayCount){ //return an array of salad instance in a random number
+        int saladCount = Math.min(3 + (dayCount - 1) / 5, 5);
+        Salad[] salads = new Salad[(random.nextInt(saladCount) + 1)];
         for(int index = 0; index < salads.length; index++){
+
+            float randomSpeedScale; //half the instant move speed by * 0.5 or retain it by * 1;
+            float minScale = 0.5f;
+            float maxScale = 1.0f;
+
+            randomSpeedScale = minScale + random.nextFloat() * (maxScale - minScale);
+            float speedModifier = dayCount * 5;
+
             salads[index] = new Salad(barPositionX,barPositionY + barHeight * ((random.nextFloat() * 0.96f) - 0.48f),
-                    saladMoveSpeed,saladTexture,saladWidth,saladHeight);
+                    (saladMaxMoveSpeed + speedModifier) * randomSpeedScale,saladTexture,saladWidth,saladHeight);
         }
-
-
-        /*
-        salads[0] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
-                saladWidth,saladHeight);
-
-        salads[1] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
-                saladWidth,saladHeight);
-        salads[2] = new Salad(barPositionX,barPositionY + barHeight * (random.nextFloat() - 0.5f),saladMoveSpeed,saladTexture,
-                saladWidth,saladHeight);
-
-         */
 
         timeSinceLastServe = 0;
 
         return salads;
     }
 
-    public void renderSalad(Batch batch, float deltaTime){
+    public void renderSalad(Batch batch, float deltaTime, int dayCount){
         //Salads
         //create new salads
         if(canYouServe()){
-            Salad[] salads = serveSalad(); //this is a method that return an array, and assign it to an array??
+            Salad[] salads = serveSalad(dayCount); //this is a method that return an array, and assign it to an array??
             for(Salad salad : salads){
                 saladList.add(salad);
             }
@@ -99,4 +96,6 @@ public class SaladBar {
             }
         }
     }
+
+
 }

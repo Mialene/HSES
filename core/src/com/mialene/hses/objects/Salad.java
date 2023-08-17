@@ -34,5 +34,4 @@ public class Salad {
         return new Rectangle(positionX,positionY,width,height);
     }
 
-
 }

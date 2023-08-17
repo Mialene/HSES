@@ -53,7 +53,8 @@ public class GameScreen implements Screen, InputProcessor {
     private final float END_DAY_DELAY = 3f;
     private int currentDay;
     private float dayStateTime;
-    private int life = 1;
+    private final int MAX_LIFE = 1;
+    private int life = MAX_LIFE;
 
     //remaining time of the day
     private static final float MAX_REMAINING_TIME = 99.99f;
@@ -105,7 +106,6 @@ public class GameScreen implements Screen, InputProcessor {
         createGameArea();
         setUpFonts();
         createButtons();
-        sarah = new Sarah(game);
     }
 
     private void createGameArea() {
@@ -123,6 +123,13 @@ public class GameScreen implements Screen, InputProcessor {
         golf = new Golf(game);
     }
 
+    private void getSarahReady(){
+        sarah = new Sarah(game, currentDay);
+
+        //temporary check the increase workload
+        System.out.println(sarah.workload);
+    }
+
     //prepare the salads
     private void prepareSalad() {
         saladBoxTexture = game.assets.manager.get(Assets.SALAD_BOX_TEXTURE);
@@ -130,7 +137,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         saladBar = new SaladBar(2436f, 555f, 5f, 1125f,
                 saladBoxTexture.getWidth() * 0.5f, saladBoxTexture.getHeight() * 0.5f, 200f
-                , saladBoxTexture, 5f);
+                , saladBoxTexture, 5f,currentDay);
     }
 
     private void setUpFonts() {
@@ -167,6 +174,7 @@ public class GameScreen implements Screen, InputProcessor {
         batch.begin();
         batch.draw(bgTexture, 0, 0, GlobalVariables.WORLD_WIDTH, GlobalVariables.WORLD_HEIGHT);
 
+        //if pause the game, delta becomes zero
         float deltaTime = gameState == GameState.RUNNING ? delta : 0f;
 
         update(deltaTime);
@@ -175,7 +183,7 @@ public class GameScreen implements Screen, InputProcessor {
         sarah.renderSarah(batch, deltaTime);
         desk.draw(batch);
         //drawSaladBar
-        saladBar.renderSalad(batch, deltaTime);
+        saladBar.renderSalad(batch, deltaTime, currentDay);
         //detect collisiion
         detectCollision(deltaTime);
 
@@ -425,6 +433,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void startGame() {
         gameState = GameState.RUNNING;
         currentDay = 1;
+        life = MAX_LIFE;
         startDay();
     }
 
@@ -436,6 +445,7 @@ public class GameScreen implements Screen, InputProcessor {
          */
         prepareSalad();
         getGolfReady();
+        getSarahReady();
 
         dayState = DayState.STARTING;
         dayStateTime = 0f;

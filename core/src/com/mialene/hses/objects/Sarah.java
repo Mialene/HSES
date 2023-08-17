@@ -9,6 +9,8 @@ import com.mialene.hses.HSES;
 import com.mialene.hses.resources.Assets;
 import com.mialene.hses.resources.GlobalVariables;
 
+import java.util.Random;
+
 
 public class Sarah {
     private final HSES game;
@@ -29,7 +31,7 @@ public class Sarah {
 
     public SarahState sarahState;
     public ProductivityState productivityState;
-    public float workload = 1000;
+    public float workload;
     public float productivity;
     private float stateTime;
     Rectangle deathBox;
@@ -40,7 +42,7 @@ public class Sarah {
     private TextureRegion[] allFrames;
     private TextureRegion currentFrame;
 
-    public Sarah(HSES game) {
+    public Sarah(HSES game, int dayCount) {
         this.game = game;
 
         productivity = 0;
@@ -53,6 +55,8 @@ public class Sarah {
         initializeCelebratingAnimation();
 
         stateTime = 0;
+
+        setWorkloadByday(dayCount);
     }
 
     public void update(float stateTime) {
@@ -143,5 +147,9 @@ public class Sarah {
 
     public void changeProductivityState(ProductivityState newState){
         productivityState = newState;
+    }
+
+    public void setWorkloadByday(int dayCount){
+        this.workload = 1000 + dayCount * 20;
     }
 }

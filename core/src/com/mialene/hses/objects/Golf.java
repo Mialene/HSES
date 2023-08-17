@@ -26,6 +26,7 @@ public class Golf {
     Animation<TextureRegion> idleAnimation, walkAnimation, eatingBoxAnimation;
     private TextureRegion[] allFrames;
     private TextureRegion currentFrame;
+    private final float LEFT_BOUND = GlobalVariables.WORLD_WIDTH * 0.32f;
     private float stateTime;
     //variables related to position
     private float startX = 1000, startY = 500;
@@ -67,8 +68,8 @@ public class Golf {
             golfPosition.y = golfHeight;
         }
 
-        if (golfPosition.x - golfWidth <= 0) {
-            golfPosition.x = golfWidth;
+        if (golfPosition.x - golfWidth <= LEFT_BOUND) {
+            golfPosition.x = LEFT_BOUND + golfWidth;
         } else if (golfPosition.x >= GlobalVariables.WORLD_WIDTH) {
             golfPosition.x = GlobalVariables.WORLD_WIDTH;
         }
