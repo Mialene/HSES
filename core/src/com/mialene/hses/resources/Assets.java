@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,11 +38,15 @@ public class Assets {
 
     //buttons
     public static final String GAMEPLAY_BUTTONS_ATLAS = "sprite/GameplayButtons.atlas";
+    //audio
+    public static final String BITE_SOUND = "audio/bite.wav";
+    public static final String CHEW_SOUND = "audio/chew.wav";
 
     public void load(){
         //load all assets
         loadGameplayAssets();
         loadFonts();
+        loadAudio();
     }
 
     private void loadGameplayAssets(){
@@ -99,6 +104,11 @@ public class Assets {
         largeFont.fontParameters.minFilter = Texture.TextureFilter.Linear;
         largeFont.fontParameters.magFilter = Texture.TextureFilter.Linear;
         manager.load(LARGE_FONT, BitmapFont.class,largeFont);
+    }
+
+    private void loadAudio(){
+        manager.load(BITE_SOUND, Sound.class);
+        manager.load(CHEW_SOUND, Sound.class);
     }
 
     public void dispose(){

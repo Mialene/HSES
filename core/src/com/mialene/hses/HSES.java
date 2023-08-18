@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mialene.hses.resources.Assets;
+import com.mialene.hses.resources.AudioManager;
 
 public class HSES extends Game {
 	public Assets assets;
+
 	private GameScreen gameScreen;
 
 	
@@ -17,6 +19,9 @@ public class HSES extends Game {
 		assets = new Assets();
 		gameScreen = new GameScreen(this);
 		setScreen(gameScreen);
+
+		//initialize audio manager
+
 	}
 
 	@Override

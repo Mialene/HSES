@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mialene.hses.objects.*;
 import com.mialene.hses.resources.Assets;
+import com.mialene.hses.resources.AudioManager;
 import com.mialene.hses.resources.GlobalVariables;
 
 import java.util.ListIterator;
@@ -91,6 +92,9 @@ public class GameScreen implements Screen, InputProcessor {
     Sarah sarah;
     SaladBar saladBar;
 
+    //audio
+    public AudioManager audioManager;
+
     private float elapsedSeconds = 0;
 
     GameScreen(HSES game) {
@@ -101,6 +105,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         game.assets.load();
         game.assets.manager.finishLoading();
+
+        //initialize manager after the assets have been loaded
+        audioManager = new AudioManager(game.assets.manager);
 
         //
         createGameArea();
@@ -258,6 +265,7 @@ public class GameScreen implements Screen, InputProcessor {
             if (golf.intersectsSalad(salad.getBoundingBox()) && golf.golfState != Golf.GolfState.EATINGBOX) {
                 iterator.remove();
                 golf.makeGolfEatBox();
+                audioManager.playGolfEatingsound();
             } else if (sarah.intersectDeathBox(salad.getBoundingBox()) && dayState == DayState.IN_PROGRESS) {
                 iterator.remove();
                 sarah.changeState(Sarah.SarahState.EATING);
