@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,6 +42,18 @@ public class Assets {
     //audio
     public static final String BITE_SOUND = "audio/bite.wav";
     public static final String CHEW_SOUND = "audio/chew.wav";
+    public static final String NOM_SOUND = "audio/nom.ogg";
+    public static final String SWALLOW_SOUND = "audio/swallow.ogg";
+    //Sarah Interrupted sounds
+    public static final String GIRL_AH_SOUND = "audio/girlAh.ogg";
+    public static final String GIRL_SIGN_SOUND = "audio/girlSign.ogg";
+    public static final String GIRL_WHAT_SOUND = "audio/girlWhat.ogg";
+    //music
+    public static final String JAZZY_FRENCHY_MUSIC = "audio/jazzyfrenchy.ogg";
+    public static final String FUNKY_ELEMENT_MUSIC = "audio/funkyelement.ogg";
+    // win / lose game
+    public static final String COMPLETED_SERIES = "audio/completedSeries.ogg";
+    public static final String GAME_OVER_SOUND_MUSIC = "audio/gameOverHigh.mp3";
 
     public void load(){
         //load all assets
@@ -109,6 +122,19 @@ public class Assets {
     private void loadAudio(){
         manager.load(BITE_SOUND, Sound.class);
         manager.load(CHEW_SOUND, Sound.class);
+        manager.load(NOM_SOUND, Sound.class);
+        manager.load(SWALLOW_SOUND, Sound.class);
+
+        //Sarah interrupted sound
+        manager.load(GIRL_AH_SOUND, Sound.class);
+        manager.load(GIRL_SIGN_SOUND, Sound.class);
+        manager.load(GIRL_WHAT_SOUND, Sound.class);
+
+        manager.load(JAZZY_FRENCHY_MUSIC, Music.class);
+        manager.load(FUNKY_ELEMENT_MUSIC, Music.class);
+
+        manager.load(COMPLETED_SERIES, Sound.class);
+        manager.load(GAME_OVER_SOUND_MUSIC, Music.class);
     }
 
     public void dispose(){

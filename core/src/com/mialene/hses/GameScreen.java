@@ -269,6 +269,7 @@ public class GameScreen implements Screen, InputProcessor {
             } else if (sarah.intersectDeathBox(salad.getBoundingBox()) && dayState == DayState.IN_PROGRESS) {
                 iterator.remove();
                 sarah.changeState(Sarah.SarahState.EATING);
+                audioManager.playSarahInterruptedSound();
             }
         }
     }
@@ -443,6 +444,7 @@ public class GameScreen implements Screen, InputProcessor {
         currentDay = 1;
         life = MAX_LIFE;
         startDay();
+        audioManager.playFunkyMusic();
     }
 
     private void startDay() {
@@ -465,14 +467,17 @@ public class GameScreen implements Screen, InputProcessor {
 
         currentDay++;
         sarah.changeState(Sarah.SarahState.CELEBRATING);
+        audioManager.playSarahCompleteSound();
         endDay();
     }
 
     private void loseDay() {
         //call the method that will refer to Sarah's lose animation later
         life--;
-        System.out.println("life minus");
         endDay();
+        if(life <= 0){
+            audioManager.playGameOverSoundMusic();
+        }
     }
 
     private void endDay() {
