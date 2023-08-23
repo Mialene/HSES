@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -187,6 +188,7 @@ public class GameScreen implements Screen, InputProcessor {
         update(deltaTime);
         saladBar.update(deltaTime);
         golf.renderGolf(batch, deltaTime);
+        touchToMove(deltaTime);
         sarah.renderSarah(batch, deltaTime);
         desk.draw(batch);
         //drawSaladBar
@@ -254,6 +256,7 @@ public class GameScreen implements Screen, InputProcessor {
             sarah.working(deltaTime);
         }
 
+        //handle touch movement
 
     }
 
@@ -562,6 +565,10 @@ public class GameScreen implements Screen, InputProcessor {
             gameState = GameState.PAUSED;
         }else if(gameState == GameState.PAUSED && resumeButtonSprite.getBoundingRectangle().contains(position.x,position.y)){
             gameState = GameState.RUNNING;
+        }else if((gameState == GameState.PAUSED || gameState == GameState.GAME_OVER)
+                && menuButtonSprite.getBoundingRectangle().contains(position.x, position.y)){
+            game.setScreen(game.menuScreen);
+            audioManager.playJazzyMusic();
         }
         return false;
     }
@@ -590,4 +597,37 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+
+    private void touchToMove(float delta) {
+        if (Gdx.input.isTouched()) {
+            float xTouchPixels = Gdx.input.getX();
+            float yTouchPixels = Gdx.input.getY();
+            Vector2 touchPoint = new Vector2(xTouchPixels, yTouchPixels);
+            touchPoint = viewport.unproject(touchPoint);
+
+            float targetX = touchPoint.x - golf.golfBoundingBox.width / 2;
+            float targetY = touchPoint.y - golf.golfBoundingBox.height / 2;
+
+            float xDistance = targetX - golf.golfBoundingBox.x;
+            float yDistance = targetY - golf.golfBoundingBox.y;
+
+            float distanceToMove = (float) Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+            float touchMoveSpeed = 50;
+            float timeRequired = distanceToMove / touchMoveSpeed;
+
+            elapsedSeconds += delta; // Increment elapsedSeconds here, once per frame
+
+            if (elapsedSeconds <= timeRequired) {
+                float progress = elapsedSeconds / timeRequired;
+                float xMove = xDistance * progress;
+                float yMove = yDistance * progress;
+                golf.setMovement(xMove, yMove);
+            } else {
+                golf.setMovement(0, 0);
+                elapsedSeconds = 0;
+            }
+        }
+    }
+
+
 }

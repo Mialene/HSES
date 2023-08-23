@@ -11,14 +11,18 @@ import com.mialene.hses.resources.AudioManager;
 public class HSES extends Game {
 	public Assets assets;
 
-	private GameScreen gameScreen;
+	public GameScreen gameScreen;
+	public MenuScreen menuScreen;
 
 	
 	@Override
 	public void create () {
 		assets = new Assets();
 		gameScreen = new GameScreen(this);
-		setScreen(gameScreen);
+
+		//initialize menu screen
+		menuScreen = new MenuScreen(this);
+		setScreen(menuScreen);
 
 		//initialize audio manager
 

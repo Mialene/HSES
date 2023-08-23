@@ -31,11 +31,11 @@ public class Golf {
     //variables related to position
     private float startX = 1000, startY = 500;
     public Vector2 golfPosition = new Vector2(); // for now it looks like this store centre
-    Rectangle golfBoundingBox;
+    public Rectangle golfBoundingBox;
     private int facing;
     private float golfWidth = 300 * 0.5f, golfHeight = 450 * 0.5f;
     //for movement
-    private final float MOVE_SPEED = 10;
+    public final float MOVE_SPEED = 10;
     private Vector2 movementDirection = new Vector2();
 
 
@@ -125,7 +125,7 @@ public class Golf {
         }
     }
 
-    private void setMovement(float x, float y) {
+    public void setMovement(float x, float y) {
         movementDirection.set(x, y);
     }
 

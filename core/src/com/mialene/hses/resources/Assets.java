@@ -39,6 +39,7 @@ public class Assets {
 
     //buttons
     public static final String GAMEPLAY_BUTTONS_ATLAS = "sprite/GameplayButtons.atlas";
+    public static final String UPDOWN_BUTTONS_ATLAS = "sprite/UpDownButton.atlas";
     //audio
     public static final String BITE_SOUND = "audio/bite.wav";
     public static final String CHEW_SOUND = "audio/chew.wav";
@@ -54,12 +55,15 @@ public class Assets {
     // win / lose game
     public static final String COMPLETED_SERIES = "audio/completedSeries.ogg";
     public static final String GAME_OVER_SOUND_MUSIC = "audio/gameOverHigh.mp3";
+    //logo
+    public static final String LOGO = "textures/HSESLogo.png";
 
     public void load(){
         //load all assets
         loadGameplayAssets();
         loadFonts();
         loadAudio();
+        loadMenuAssets();
     }
 
     private void loadGameplayAssets(){
@@ -135,6 +139,11 @@ public class Assets {
 
         manager.load(COMPLETED_SERIES, Sound.class);
         manager.load(GAME_OVER_SOUND_MUSIC, Music.class);
+    }
+
+    public void loadMenuAssets(){
+        manager.load(LOGO, Texture.class);
+        manager.load(UPDOWN_BUTTONS_ATLAS, TextureAtlas.class);
     }
 
     public void dispose(){

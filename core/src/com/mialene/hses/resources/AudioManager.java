@@ -11,7 +11,7 @@ public class AudioManager {
     //music
     private final Music JazzyFrenchyMusic;
     private final Music FunkyElementMusic;
-    private final float musicVolume = 0.05f;
+    private final float musicVolume = 0.1f;
 
     //UI sound
 
@@ -64,7 +64,7 @@ public class AudioManager {
         gameOverSoundMusic.setLooping(false);
         JazzyFrenchyMusic.setLooping(true);
         FunkyElementMusic.setLooping(true);
-        JazzyFrenchyMusic.setVolume(musicVolume);
+        JazzyFrenchyMusic.setVolume(0.33f);
         FunkyElementMusic.setVolume(musicVolume);
     }
 
