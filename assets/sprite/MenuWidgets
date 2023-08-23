@@ -1,0 +1,69 @@
+
+MenuWidgets.png
+size: 2048, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+HSESLogo
+  rotate: false
+  xy: 2, 406
+  size: 1511, 592
+  orig: 1511, 592
+  offset: 0, 0
+  index: -1
+Menu  col_Button
+  rotate: false
+  xy: 2, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+Menu Button
+  rotate: false
+  xy: 1206, 204
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+New Game  col_Button
+  rotate: false
+  xy: 1206, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+New game Button
+  rotate: false
+  xy: 604, 2
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+Pause Square Button
+  rotate: false
+  xy: 1515, 596
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Pause col_Square Button
+  rotate: false
+  xy: 1515, 798
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+Resume  col_Button
+  rotate: false
+  xy: 2, 204
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1
+Resume Button
+  rotate: false
+  xy: 604, 204
+  size: 600, 200
+  orig: 600, 200
+  offset: 0, 0
+  index: -1

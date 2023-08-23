@@ -2,13 +2,18 @@ package com.mialene.hses;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -20,12 +25,14 @@ public class MenuScreen implements Screen {
     private final HSES game;
     public AudioManager audioManager;
     private final Stage stage;
-    private final TextureAtlas upDownButtonAtlas;
+    private final TextureAtlas menuWidgetAtlas;
 
     //image widgets
-    private Texture logoTexture;
+    private Image logo;
     //button widgets
     private Button newGameButton;
+    //label widgets
+    private Label songCreditLabel;
 
     public MenuScreen(HSES game){
         this.game = game;
@@ -37,30 +44,26 @@ public class MenuScreen implements Screen {
         stage.setViewport(new FitViewport(GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT, stage.getCamera()));
 
         //get the menu atlas from the asset manager
-        upDownButtonAtlas = game.assets.manager.get(Assets.UPDOWN_BUTTONS_ATLAS);
+        menuWidgetAtlas = game.assets.manager.get(Assets.MENU_WIDGETS);
 
         //create the widgets
         createImage();
         createButtons();
+        createLabel();
 
-        //try to create table
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.setRound(false);
-        stage.addActor(mainTable);
-
-        mainTable.add(newGameButton);
+        createTable();
     }
 
-    private void createImage(){
-        logoTexture = game.assets.manager.get(Assets.LOGO);
+    private void createImage() {
+        logo = new Image(menuWidgetAtlas.findRegion("HSESLogo"));
+        logo.setSize(logo.getWidth(), logo.getHeight());
     }
 
     private void createButtons(){
         //create button style
         Button.ButtonStyle newGameButtonStyle = new Button.ButtonStyle();
-        newGameButtonStyle.up = new TextureRegionDrawable(upDownButtonAtlas.findRegion("New game Button"));
-        newGameButtonStyle.down = new TextureRegionDrawable(upDownButtonAtlas.findRegion("New Game  col_Button"));
+        newGameButtonStyle.up = new TextureRegionDrawable(menuWidgetAtlas.findRegion("New game Button"));
+        newGameButtonStyle.down = new TextureRegionDrawable(menuWidgetAtlas.findRegion("New Game  col_Button"));
         newGameButton = new Button(newGameButtonStyle);
         newGameButton.setSize(newGameButton.getWidth(),newGameButton.getHeight());
 
@@ -72,6 +75,54 @@ public class MenuScreen implements Screen {
             }
         });
     }
+
+    private void createLabel(){
+        //get the small font
+        BitmapFont smallFont = game.assets.manager.get(Assets.SMALL_FONT);
+        smallFont.setUseIntegerPositions(false);
+
+        //create the label style
+        Label.LabelStyle songCreditLabelStyle = new Label.LabelStyle();
+        songCreditLabelStyle.font = smallFont;
+        songCreditLabelStyle.fontColor = Color.BLACK;
+
+        String creditText = "Jazzy Frenchy\n" +
+                "Music by Bensound.com/royalty-free-music\n" +
+                "License code: LDIZOJRIDCLDLF5I\n" +
+                "\n" +
+                "Funky Element\n" +
+                "Music I use: https://www.bensound.com\n" +
+                "License code: 9XN4TIAWGYRELKHU\n";
+
+        //create the display label
+        songCreditLabel = new Label(creditText,songCreditLabelStyle);
+    }
+
+    private void createTable(){
+        //stage.setDebugAll(true);
+
+        Table mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.setRound(false);
+        stage.addActor(mainTable);
+
+        Table leftTable = new Table();
+        //leftTable.setFillParent(true);
+        leftTable.setRound(false);
+
+        //add logo to left side table
+        leftTable.add(logo).size(logo.getWidth() * 0.9f, logo.getHeight() * 0.9f);
+        leftTable.row().padTop(5f);
+
+        leftTable.add(newGameButton);
+        leftTable.row();
+
+
+        //add left table to the main table
+        mainTable.add(leftTable);
+        mainTable.add(songCreditLabel);
+    }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);

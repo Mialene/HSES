@@ -56,7 +56,7 @@ public class Assets {
     public static final String COMPLETED_SERIES = "audio/completedSeries.ogg";
     public static final String GAME_OVER_SOUND_MUSIC = "audio/gameOverHigh.mp3";
     //logo
-    public static final String LOGO = "textures/HSESLogo.png";
+    public static final String MENU_WIDGETS = "sprite/MenuWidgets";
 
     public void load(){
         //load all assets
@@ -142,7 +142,7 @@ public class Assets {
     }
 
     public void loadMenuAssets(){
-        manager.load(LOGO, Texture.class);
+        manager.load(MENU_WIDGETS, TextureAtlas.class);
         manager.load(UPDOWN_BUTTONS_ATLAS, TextureAtlas.class);
     }
 
