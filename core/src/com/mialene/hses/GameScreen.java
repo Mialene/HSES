@@ -96,7 +96,10 @@ public class GameScreen implements Screen, InputProcessor {
     //audio
     public AudioManager audioManager;
 
-    private float elapsedSeconds = 0;
+    //variable for calculating touch movement
+    private float touchMoveSpeed = 600;
+    private final float TOUCH_MOVEMENT_THRESHOLD = 4.5f;
+
 
     GameScreen(HSES game) {
         this.game = game;
@@ -187,8 +190,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         update(deltaTime);
         saladBar.update(deltaTime);
-        golf.renderGolf(batch, deltaTime);
         touchToMove(deltaTime);
+        golf.renderGolf(batch, deltaTime);
+
         sarah.renderSarah(batch, deltaTime);
         desk.draw(batch);
         //drawSaladBar
@@ -605,27 +609,34 @@ public class GameScreen implements Screen, InputProcessor {
             Vector2 touchPoint = new Vector2(xTouchPixels, yTouchPixels);
             touchPoint = viewport.unproject(touchPoint);
 
-            float targetX = touchPoint.x - golf.golfBoundingBox.width / 2;
-            float targetY = touchPoint.y - golf.golfBoundingBox.height / 2;
+            //calculate the x and y difference
+            Vector2 golfCentre = new Vector2(
+                    golf.golfBoundingBox.x + golf.golfBoundingBox.width / 2,
+                    golf.golfBoundingBox.y + golf.golfBoundingBox.height / 2
+            );
 
-            float xDistance = targetX - golf.golfBoundingBox.x;
-            float yDistance = targetY - golf.golfBoundingBox.y;
+            float touchDistance = touchPoint.dst(golfCentre);
 
-            float distanceToMove = (float) Math.sqrt(xDistance * xDistance + yDistance * yDistance);
-            float touchMoveSpeed = 50;
-            float timeRequired = distanceToMove / touchMoveSpeed;
+            //only move when touch distance is more than movement threshold
+            if(touchDistance > TOUCH_MOVEMENT_THRESHOLD) {
 
-            elapsedSeconds += delta; // Increment elapsedSeconds here, once per frame
+                //implement speed
+                float xTouchDifference = touchPoint.x - golfCentre.x;
+                float yTouchDifference = touchPoint.y - golfCentre.y;
 
-            if (elapsedSeconds <= timeRequired) {
-                float progress = elapsedSeconds / timeRequired;
-                float xMove = xDistance * progress;
-                float yMove = yDistance * progress;
-                golf.setMovement(xMove, yMove);
-            } else {
-                golf.setMovement(0, 0);
-                elapsedSeconds = 0;
+                float xMove = xTouchDifference / touchDistance * touchMoveSpeed * delta;
+                float yMove = yTouchDifference / touchDistance * touchMoveSpeed * delta;
+                golf.translate(xMove,yMove);
+
+                //update the facing
+                if(xTouchDifference < 0){
+                    golf.facing = -1;
+                }
+                if(xTouchDifference > 0){
+                    golf.facing = 1;
+                }
             }
+
         }
     }
 

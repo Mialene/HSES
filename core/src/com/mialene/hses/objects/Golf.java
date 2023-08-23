@@ -32,7 +32,7 @@ public class Golf {
     private float startX = 1000, startY = 500;
     public Vector2 golfPosition = new Vector2(); // for now it looks like this store centre
     public Rectangle golfBoundingBox;
-    private int facing;
+    public int facing;
     private float golfWidth = 300 * 0.5f, golfHeight = 450 * 0.5f;
     //for movement
     public final float MOVE_SPEED = 10;
@@ -185,5 +185,10 @@ public class Golf {
     //check if intersect with a salad
     public boolean intersectsSalad(Rectangle otherRectangle) {
         return golfBoundingBox.overlaps(otherRectangle);
+    }
+
+    public void translate(float deltaX, float deltaY){
+        golfPosition.x += deltaX;
+        golfPosition.y += deltaY;
     }
 }
