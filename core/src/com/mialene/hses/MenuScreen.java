@@ -3,7 +3,6 @@ package com.mialene.hses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -34,14 +32,14 @@ public class MenuScreen implements Screen {
     //label widgets
     private Label songCreditLabel;
 
-    public MenuScreen(HSES game){
+    public MenuScreen(HSES game) {
         this.game = game;
         audioManager = new AudioManager(game.assets.manager);
         audioManager.playJazzyMusic();
 
         //set up the stage
         stage = new Stage();
-        stage.setViewport(new FitViewport(GlobalVariables.WORLD_WIDTH,GlobalVariables.WORLD_HEIGHT, stage.getCamera()));
+        stage.setViewport(new FitViewport(GlobalVariables.WORLD_WIDTH, GlobalVariables.WORLD_HEIGHT, stage.getCamera()));
 
         //get the menu atlas from the asset manager
         menuWidgetAtlas = game.assets.manager.get(Assets.MENU_WIDGETS);
@@ -59,13 +57,13 @@ public class MenuScreen implements Screen {
         logo.setSize(logo.getWidth(), logo.getHeight());
     }
 
-    private void createButtons(){
+    private void createButtons() {
         //create button style
         Button.ButtonStyle newGameButtonStyle = new Button.ButtonStyle();
         newGameButtonStyle.up = new TextureRegionDrawable(menuWidgetAtlas.findRegion("New game Button"));
         newGameButtonStyle.down = new TextureRegionDrawable(menuWidgetAtlas.findRegion("New Game  col_Button"));
         newGameButton = new Button(newGameButtonStyle);
-        newGameButton.setSize(newGameButton.getWidth(),newGameButton.getHeight());
+        newGameButton.setSize(newGameButton.getWidth(), newGameButton.getHeight());
 
         //add the button listener
         newGameButton.addListener(new ChangeListener() {
@@ -76,7 +74,7 @@ public class MenuScreen implements Screen {
         });
     }
 
-    private void createLabel(){
+    private void createLabel() {
         //get the small font
         BitmapFont smallFont = game.assets.manager.get(Assets.SMALL_FONT);
         smallFont.setUseIntegerPositions(false);
@@ -95,10 +93,10 @@ public class MenuScreen implements Screen {
                 "License code: 9XN4TIAWGYRELKHU\n";
 
         //create the display label
-        songCreditLabel = new Label(creditText,songCreditLabelStyle);
+        songCreditLabel = new Label(creditText, songCreditLabelStyle);
     }
 
-    private void createTable(){
+    private void createTable() {
         //stage.setDebugAll(true);
 
         Table mainTable = new Table();
@@ -140,7 +138,7 @@ public class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         //update the stage's viewport with the new screen size
-        stage.getViewport().update(width,height,true);
+        stage.getViewport().update(width, height, true);
     }
 
     @Override

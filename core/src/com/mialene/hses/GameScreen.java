@@ -169,12 +169,12 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     private void createButtons() {
-        TextureAtlas buttonTextureAtlas = game.assets.manager.get(Assets.GAMEPLAY_BUTTONS_ATLAS);
-        newGameButtonSprite = new Sprite(buttonTextureAtlas.findRegion("New game Button"));
-        menuButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Menu Button"));
+        TextureAtlas menuWidgetAtlas = game.assets.manager.get(Assets.MENU_WIDGETS);
+        newGameButtonSprite = new Sprite(menuWidgetAtlas.findRegion("New game Button"));
+        menuButtonSprite = new Sprite(menuWidgetAtlas.findRegion("Menu Button"));
 
-        resumeButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Resume Button"));
-        pauseButtonSprite = new Sprite(buttonTextureAtlas.findRegion("Pause Square Button"));
+        resumeButtonSprite = new Sprite(menuWidgetAtlas.findRegion("Resume Button"));
+        pauseButtonSprite = new Sprite(menuWidgetAtlas.findRegion("Pause Square Button"));
         pauseButtonSprite.setSize(pauseButtonSprite.getWidth() * 0.5f,pauseButtonSprite.getHeight() * 0.5f);
     }
 

@@ -16,7 +16,7 @@ public class Furniture {
         this.height = height;
     }
 
-    public void draw(Batch batch){
-        batch.draw(texture,xPosition,yPosition,width,height);
+    public void draw(Batch batch) {
+        batch.draw(texture, xPosition, yPosition, width, height);
     }
 }

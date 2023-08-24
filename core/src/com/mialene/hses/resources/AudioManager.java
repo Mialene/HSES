@@ -68,37 +68,37 @@ public class AudioManager {
         FunkyElementMusic.setVolume(musicVolume);
     }
 
-    public void playGolfEatingsound(){
+    public void playGolfEatingsound() {
         Collections.shuffle(golfEatingSoundList);
         golfEatingSoundList.get(0).play();
     }
 
-    public void playSarahCompleteSound(){
+    public void playSarahCompleteSound() {
         Collections.shuffle(sarahCompleteSoundList);
         sarahCompleteSoundList.get(0).play();
     }
 
-    public void playSarahInterruptedSound(){
+    public void playSarahInterruptedSound() {
         Collections.shuffle(sarahInterruptedSoundList);
         sarahInterruptedSoundList.get(0).play();
     }
 
-    public void playJazzyMusic(){
-        if(FunkyElementMusic.isPlaying()){
+    public void playJazzyMusic() {
+        if (FunkyElementMusic.isPlaying()) {
             FunkyElementMusic.stop();
         }
         JazzyFrenchyMusic.play();
     }
 
-    public void playFunkyMusic(){
-        if(JazzyFrenchyMusic.isPlaying()){
+    public void playFunkyMusic() {
+        if (JazzyFrenchyMusic.isPlaying()) {
             JazzyFrenchyMusic.stop();
         }
         FunkyElementMusic.play();
     }
 
-    public void playGameOverSoundMusic(){
-        if(!gameOverSoundMusic.isPlaying()){
+    public void playGameOverSoundMusic() {
+        if (!gameOverSoundMusic.isPlaying()) {
             gameOverSoundMusic.play();
         }
     }

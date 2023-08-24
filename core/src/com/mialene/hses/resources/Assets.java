@@ -38,8 +38,7 @@ public class Assets {
     public static final String LARGE_FONT = "largeFont.ttf";
 
     //buttons
-    public static final String GAMEPLAY_BUTTONS_ATLAS = "sprite/GameplayButtons.atlas";
-    public static final String UPDOWN_BUTTONS_ATLAS = "sprite/UpDownButton.atlas";
+
     //audio
     public static final String BITE_SOUND = "audio/bite.wav";
     public static final String CHEW_SOUND = "audio/chew.wav";
@@ -58,7 +57,7 @@ public class Assets {
     //logo
     public static final String MENU_WIDGETS = "sprite/MenuWidgets";
 
-    public void load(){
+    public void load() {
         //load all assets
         loadGameplayAssets();
         loadFonts();
@@ -66,33 +65,32 @@ public class Assets {
         loadMenuAssets();
     }
 
-    private void loadGameplayAssets(){
+    private void loadGameplayAssets() {
         TextureLoader.TextureParameter parameter = new TextureLoader.TextureParameter();
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
 
-        manager.load(BACKGROUND_TEXTURE, Texture.class,parameter);
-        manager.load(DESK_TEXTURE,Texture.class,parameter);
-        manager.load(SALAD_BOX_TEXTURE, Texture.class,parameter);
+        manager.load(BACKGROUND_TEXTURE, Texture.class, parameter);
+        manager.load(DESK_TEXTURE, Texture.class, parameter);
+        manager.load(SALAD_BOX_TEXTURE, Texture.class, parameter);
 
         //load Golf sprite
-        manager.load(IDLE_SPRITESHEET, Texture.class,parameter);
-        manager.load(IDLE_RESIZE_SPRITESHEET, Texture.class,parameter);
-        manager.load(EATING_BOX_SPRITESHEET, Texture.class,parameter);
+        manager.load(IDLE_SPRITESHEET, Texture.class, parameter);
+        manager.load(IDLE_RESIZE_SPRITESHEET, Texture.class, parameter);
+        manager.load(EATING_BOX_SPRITESHEET, Texture.class, parameter);
 
         //load Sarah sprite
-        manager.load(SARAH_WORKING_SPRITESHEET, Texture.class,parameter);
-        manager.load(SARAH_EATING_SPRITESHEET, Texture.class,parameter);
-        manager.load(SARAH_CELEBRATING_SPRITESHEET, Texture.class,parameter);
+        manager.load(SARAH_WORKING_SPRITESHEET, Texture.class, parameter);
+        manager.load(SARAH_EATING_SPRITESHEET, Texture.class, parameter);
+        manager.load(SARAH_CELEBRATING_SPRITESHEET, Texture.class, parameter);
 
         //load buttons
-        manager.load(GAMEPLAY_BUTTONS_ATLAS, TextureAtlas.class);
     }
 
-    private void loadFonts(){
+    private void loadFonts() {
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-        manager.setLoader(BitmapFont.class,".ttf",new FreetypeFontLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the small fonts
         FreetypeFontLoader.FreeTypeFontLoaderParameter smallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -100,7 +98,7 @@ public class Assets {
         smallFont.fontParameters.size = 48;
         smallFont.fontParameters.minFilter = Texture.TextureFilter.Linear;
         smallFont.fontParameters.magFilter = Texture.TextureFilter.Linear;
-        manager.load(SMALL_FONT, BitmapFont.class,smallFont);
+        manager.load(SMALL_FONT, BitmapFont.class, smallFont);
 
         //load the medium fonts
         FreetypeFontLoader.FreeTypeFontLoaderParameter mediumFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -110,7 +108,7 @@ public class Assets {
         mediumFont.fontParameters.borderColor = Color.DARK_GRAY;
         mediumFont.fontParameters.minFilter = Texture.TextureFilter.Linear;
         mediumFont.fontParameters.magFilter = Texture.TextureFilter.Linear;
-        manager.load(MEDIUM_FONT, BitmapFont.class,mediumFont);
+        manager.load(MEDIUM_FONT, BitmapFont.class, mediumFont);
 
         //load the large fonts
         FreetypeFontLoader.FreeTypeFontLoaderParameter largeFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -120,10 +118,10 @@ public class Assets {
         largeFont.fontParameters.borderColor = Color.CORAL;
         largeFont.fontParameters.minFilter = Texture.TextureFilter.Linear;
         largeFont.fontParameters.magFilter = Texture.TextureFilter.Linear;
-        manager.load(LARGE_FONT, BitmapFont.class,largeFont);
+        manager.load(LARGE_FONT, BitmapFont.class, largeFont);
     }
 
-    private void loadAudio(){
+    private void loadAudio() {
         manager.load(BITE_SOUND, Sound.class);
         manager.load(CHEW_SOUND, Sound.class);
         manager.load(NOM_SOUND, Sound.class);
@@ -141,12 +139,12 @@ public class Assets {
         manager.load(GAME_OVER_SOUND_MUSIC, Music.class);
     }
 
-    public void loadMenuAssets(){
+    public void loadMenuAssets() {
         manager.load(MENU_WIDGETS, TextureAtlas.class);
-        manager.load(UPDOWN_BUTTONS_ATLAS, TextureAtlas.class);
+
     }
 
-    public void dispose(){
+    public void dispose() {
         manager.dispose();
     }
 }

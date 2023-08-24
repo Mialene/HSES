@@ -13,7 +13,7 @@ public class Salad {
     public float verticalMoveSpeed;
     private Texture texture;
 
-    public Salad(float xCentre, float yCentre, float moveSpeed, Texture texture,float width, float height) {
+    public Salad(float xCentre, float yCentre, float moveSpeed, Texture texture, float width, float height) {
         this.positionX = xCentre - width / 2;
         this.positionY = yCentre - height / 2;
         this.moveSpeed = moveSpeed;
@@ -26,12 +26,12 @@ public class Salad {
         verticalMoveSpeed = randomNum;
     }
 
-    public void drawSalad(Batch batch){
-        batch.draw(texture,positionX,positionY,width,height);
+    public void drawSalad(Batch batch) {
+        batch.draw(texture, positionX, positionY, width, height);
     }
 
-    public Rectangle getBoundingBox(){
-        return new Rectangle(positionX,positionY,width,height);
+    public Rectangle getBoundingBox() {
+        return new Rectangle(positionX, positionY, width, height);
     }
 
 }
