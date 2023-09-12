@@ -43,16 +43,16 @@ public class Assets {
     public static final String BITE_SOUND = "audio/bite.wav";
     public static final String CHEW_SOUND = "audio/chew.wav";
     public static final String NOM_SOUND = "audio/nom.ogg";
-    public static final String SWALLOW_SOUND = "audio/swallow.ogg";
+    public static final String SWALLOW_SOUND = "audio/swallow.wav";
     //Sarah Interrupted sounds
-    public static final String GIRL_AH_SOUND = "audio/girlAh.ogg";
-    public static final String GIRL_SIGN_SOUND = "audio/girlSign.ogg";
-    public static final String GIRL_WHAT_SOUND = "audio/girlWhat.ogg";
+    public static final String GIRL_AH_SOUND = "audio/girlAh.mp3";
+    public static final String GIRL_SIGN_SOUND = "audio/girlSign.mp3";
+    public static final String GIRL_WHAT_SOUND = "audio/girlWhat.mp3";
     //music
-    public static final String JAZZY_FRENCHY_MUSIC = "audio/jazzyfrenchy.ogg";
-    public static final String FUNKY_ELEMENT_MUSIC = "audio/funkyelement.ogg";
+    public static final String JAZZY_FRENCHY_MUSIC = "audio/jazzyfrenchy.wav";
+    public static final String FUNKY_ELEMENT_MUSIC = "audio/funkyelement.mp3";
     // win / lose game
-    public static final String COMPLETED_SERIES = "audio/completedSeries.ogg";
+    public static final String COMPLETED_SERIES = "audio/completedSeries.wav";
     public static final String GAME_OVER_SOUND_MUSIC = "audio/gameOverHigh.mp3";
     //logo
     public static final String MENU_WIDGETS = "sprite/MenuWidgets";
